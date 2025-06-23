@@ -1,5 +1,5 @@
 {
-  "name": "<plugin-name>",
+  "name": "visual-submit",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.tsx",
