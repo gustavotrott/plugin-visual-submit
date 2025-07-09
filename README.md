@@ -2,7 +2,21 @@
 
 ## Description
 
-A brief description of the plugin including a screenshot and/or a short video.
+The Visual Submit plugin allows students to upload images during BigBlueButton sessions while enabling presenters to view and manage all submitted visual content in real-time.
+
+### Features
+
+#### User View (Students)
+- **Image Upload**: Students can select and upload image files through a user-friendly file input interface
+- **Image Preview**: Real-time preview of selected images before submission
+- **File Validation**: Only image files are accepted (PNG, JPEG, GIF, etc.)
+- **Submit Button**: Clear submission workflow with visual feedback
+
+#### Presenter View (Instructors)
+- **File Gallery**: View all uploaded images in a organized list format
+- **File Details**: See file information including name, size, type, upload time, and uploader
+- **Image Thumbnails**: Quick visual preview of each submitted image
+- **File Actions**: View images in full size and manage submissions
 
 ## Building the Plugin
 

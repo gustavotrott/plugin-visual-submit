@@ -2,5 +2,16 @@
   "requiredSdkVersion": "~0.0.84",
   "name": "visualSubmit",
   "javascriptEntrypointUrl": "visualSubmit.js",
-  "localesBaseUrl": "https://cdn.dominio.com/pluginabc/"
+  "dataChannels": [
+    {
+      "name": "submitImage",
+      "pushPermission": [
+        "all"
+      ],
+      "replaceOrDeletePermission": [
+        "creator",
+        "presenter"
+      ]
+    }
+  ]
 }
