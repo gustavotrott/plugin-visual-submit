@@ -5,8 +5,8 @@ const path = require('path');
 module.exports = {
   entry: './src/index.tsx',
   output: {
-    filename: 'visualSubmit.js',
-    library: 'visualSubmit',
+    filename: 'VisualSubmit.js',
+    library: 'VisualSubmit',
     libraryTarget: 'umd',
     publicPath: '/',
     globalObject: 'this',
