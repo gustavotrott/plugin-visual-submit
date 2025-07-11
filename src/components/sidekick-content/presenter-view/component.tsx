@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DataChannelEntryResponseType } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
+import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 
@@ -25,7 +26,7 @@ export function PresenterSidekickArea({
     return Array.from(users.values());
   }, [submittedImages]);
 
-  // filter images by selected user
+  // Filter images by selected user
   const filteredImages = React.useMemo(() => {
     if (!selectedUserId) return submittedImages;
     return submittedImages.filter((image) => (
@@ -33,7 +34,7 @@ export function PresenterSidekickArea({
     ));
   }, [submittedImages, selectedUserId]);
 
-  // group images by user
+  // Group images by user
   const groupedImages = React.useMemo(() => {
     const groups = new Map<string, {
       user: { userId: string; userName: string; };
@@ -84,7 +85,7 @@ export function PresenterSidekickArea({
 
       {filteredImages.length === 0 ? (
         <Styled.PresenterEmptyState>
-          {selectedUserId ? 'No files have been submitted by this user.' : 'No files have been submitted yet.'}
+          No files have been submitted yet.
         </Styled.PresenterEmptyState>
       ) : (
         <Styled.PresenterFilesList>
@@ -99,33 +100,37 @@ export function PresenterSidekickArea({
               </Styled.PresenterUserHeader>
 
               <Styled.PresenterUserImagesContainer>
-                {userGroup.images.map((file) => (
-                  <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
-                    <Styled.PresenterFileImage src={file.payloadJson.imageUrl} />
+                {userGroup.images.map((file) => {
+                  const { imageUrl } = file.payloadJson;
 
-                    <DefaultStyled.Info>
-                      <DefaultStyled.Text style={{ marginTop: '5px' }}>
-                        Uploaded
-                        {' '}
-                        {formatUploadTime(new Date(file.createdAt))}
-                      </DefaultStyled.Text>
-                    </DefaultStyled.Info>
+                  return (
+                    <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
+                      <Styled.PresenterFileImage src={imageUrl} />
 
-                    <Styled.PresenterActionButtons>
-                      <Styled.PresenterActionButton
-                        className="view"
-                        onClick={() => handleViewFile(file.payloadJson.imageUrl)}
-                      >
-                        View
-                      </Styled.PresenterActionButton>
-                      <Styled.PresenterActionButton
-                        className="delete"
-                      >
-                        Delete
-                      </Styled.PresenterActionButton>
-                    </Styled.PresenterActionButtons>
-                  </Styled.PresenterFileItem>
-                ))}
+                      <DefaultStyled.Info>
+                        <DefaultStyled.Text style={{ marginTop: '5px' }}>
+                          Uploaded
+                          {' '}
+                          {formatUploadTime(new Date(file.createdAt))}
+                        </DefaultStyled.Text>
+                      </DefaultStyled.Info>
+
+                      <Styled.PresenterActionButtons>
+                        <CommonStyled.ActionButton
+                          className="view"
+                          onClick={() => handleViewFile(imageUrl)}
+                        >
+                          View
+                        </CommonStyled.ActionButton>
+                        <CommonStyled.ActionButton
+                          className="delete"
+                        >
+                          Delete
+                        </CommonStyled.ActionButton>
+                      </Styled.PresenterActionButtons>
+                    </Styled.PresenterFileItem>
+                  );
+                })}
               </Styled.PresenterUserImagesContainer>
             </div>
           ))}

@@ -6,7 +6,6 @@ import {
   ListItem,
   List,
   Actions,
-  ActionButton,
   EmptyState,
 } from '../shared/styles';
 
@@ -43,11 +42,6 @@ export const PresenterFileType = styled.span`
 
 export const PresenterActionButtons = styled(Actions)`
   gap: 8px;
-`;
-
-export const PresenterActionButton = styled(ActionButton)`
-  padding: 6px 12px;
-  font-size: 12px;
 `;
 
 export const PresenterEmptyState = styled(EmptyState)`

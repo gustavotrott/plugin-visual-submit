@@ -1,7 +1,18 @@
 {
   "requiredSdkVersion": "~0.0.84",
-  "name": "visualSubmit",
-  "javascriptEntrypointUrl": "visualSubmit.js",
+  "name": "VisualSubmit",
+  "javascriptEntrypointUrl": "VisualSubmit.js",
+  "remoteDataSources": [
+    {
+      "name": "fileUpload",
+      "url": "assets",
+      "fetchMode": "onDemand",
+      "permissions": [
+        "moderator",
+        "viewer"
+      ]
+    }
+  ],
   "dataChannels": [
     {
       "name": "submitImage",

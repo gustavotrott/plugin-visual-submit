@@ -6,7 +6,6 @@ import {
   ListItem,
   List,
   Actions,
-  ActionButton,
   EmptyState,
   Text,
 } from '../shared/styles';
@@ -19,7 +18,6 @@ export const UserContainer = styled(Container)`
 `;
 
 export const UserTitle = styled(Title)`
-  margin-bottom: 10px;
   font-size: 18px;
 `;
 
@@ -37,8 +35,8 @@ export const UserFileInput = styled.input`
 `;
 
 export const UserImagePreview = styled(Thumbnail)`
-  width: 80px;
-  height: 80px;
+  width: 100%;
+  height: 100%;
   margin-top: 10px;
 `;
 
@@ -62,7 +60,7 @@ export const UserSubmitButton = styled.button`
 `;
 
 export const UserSubmittedImagesContainer = styled.div`
-  margin-top: 15px;
+  border-top: 1px solid #ddd;
 `;
 
 export const UserSubmittedImagesLabel = styled.h3`
@@ -95,12 +93,30 @@ export const UserSubmittedImageActions = styled(Actions)`
   gap: 6px;
 `;
 
-export const UserSubmittedImageAction = styled(ActionButton)`
-  padding: 4px 8px;
-  font-size: 11px;
-`;
-
 export const UserEmptySubmittedState = styled(EmptyState)`
   padding: 20px;
   font-size: 14px;
+`;
+
+export const QrCodeButton = styled.button`
+  width: 40px;
+  height: 40px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background: #5a6268;
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.25);
+  }
 `;
