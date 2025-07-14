@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { StatusMessage } from '../../styles/common';
 
 export const Container = styled.div`
   min-height: 100vh;
@@ -57,6 +58,12 @@ export const CameraButton = styled.button`
     cursor: not-allowed;
     transform: none;
   }
+`;
+
+export const SuccessMessage = styled(StatusMessage)`
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
 `;
 
 export const HiddenFileInput = styled.input`

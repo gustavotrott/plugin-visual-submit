@@ -13,7 +13,6 @@ interface UserSidekickAreaProps {
   pluginApi: PluginApi;
   currentUser: CurrentUserData;
   submitError: string | null;
-  submitSuccess: boolean;
   setSubmitError: React.Dispatch<React.SetStateAction<string | null>>;
   handleImageSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   submitImageResponseData: DataChannelEntryResponseType<SubmitImage>[];
@@ -23,7 +22,6 @@ export function UserSidekickArea({
   pluginApi,
   currentUser,
   submitError,
-  submitSuccess,
   setSubmitError,
   handleImageSubmit,
   submitImageResponseData,
@@ -118,12 +116,6 @@ export function UserSidekickArea({
           <CommonStyled.ErrorMessage>
             {submitError}
           </CommonStyled.ErrorMessage>
-        )}
-
-        {submitSuccess && (
-          <CommonStyled.SuccessMessage>
-            Image uploaded successfully!
-          </CommonStyled.SuccessMessage>
         )}
 
         <Styled.UserSubmitButton

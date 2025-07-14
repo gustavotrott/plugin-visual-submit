@@ -15,12 +15,6 @@ export const ErrorMessage = styled(StatusMessage)`
   border: 1px solid #f5c6cb;
 `;
 
-export const SuccessMessage = styled(StatusMessage)`
-  color: #155724;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-`;
-
 export const LoadingMessage = styled(StatusMessage)`
   color: #856404;
   background-color: #fff3cd;

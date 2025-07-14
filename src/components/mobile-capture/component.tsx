@@ -78,9 +78,9 @@ export function MobileCapture({
           )}
 
           {submitSuccess && (
-            <CommonStyled.SuccessMessage>
+            <Styled.SuccessMessage>
               Image uploaded successfully!
-            </CommonStyled.SuccessMessage>
+            </Styled.SuccessMessage>
           )}
 
           <Styled.HiddenFileInput
