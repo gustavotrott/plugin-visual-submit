@@ -64,7 +64,7 @@ export const EmptyState = styled.div`
   font-style: italic;
   background: white;
   border-radius: 8px;
-  border: 2px dashed #ddd;
+  border: 2px solid #ddd;
 `;
 
 export const Text = styled.div`

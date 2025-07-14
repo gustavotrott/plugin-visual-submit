@@ -45,7 +45,7 @@ export const PresenterActionButtons = styled(Actions)`
 `;
 
 export const PresenterEmptyState = styled(EmptyState)`
-  padding: 40px 20px;
+  padding: 20px;
 `;
 
 export const PresenterUserHeader = styled.div`

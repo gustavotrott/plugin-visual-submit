@@ -62,9 +62,9 @@ export function PresenterSidekickArea({
   return (
     <Styled.PresenterContainer>
       <Styled.PresenterTitle>
-        Submitted Visual Content (
-        {filteredImages.length}
-        )
+        Submitted Visual Content
+        {' '}
+        {filteredImages.length > 0 && `(${filteredImages.length})`}
       </Styled.PresenterTitle>
 
       {uniqueUsers.length > 0 && (
