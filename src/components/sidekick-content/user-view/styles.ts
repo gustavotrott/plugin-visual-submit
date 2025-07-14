@@ -23,14 +23,26 @@ export const UserTitle = styled(Title)`
 
 export const UserFileInput = styled.input`
   width: 100%;
-  padding: 10px;
+  padding: 20px;
   border: 2px dashed #ddd;
-  border-radius: 6px;
-  background: white;
+  border-radius: 8px;
+  background: #f8f9fa;
   cursor: pointer;
-  
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.2s ease;
+
   &:hover {
     border-color: #007bff;
+    background: #e3f2fd;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    background: #e3f2fd;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
 `;
 

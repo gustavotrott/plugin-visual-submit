@@ -70,7 +70,37 @@ export function UserSidekickArea({
 
   return (
     <Styled.UserContainer>
-      <Styled.UserTitle>Submit Visual Content</Styled.UserTitle>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '5px',
+        }}
+      >
+        <Styled.UserTitle>Submit Visual Content</Styled.UserTitle>
+        <Styled.QrCodeButton
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          aria-label="Show QR Code for Mobile Camera"
+          title="Show QR Code for Mobile Camera"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-qr-code-icon lucide-qr-code">
+            <rect width="5" height="5" x="3" y="3" rx="1" />
+            <rect width="5" height="5" x="16" y="3" rx="1" />
+            <rect width="5" height="5" x="3" y="16" rx="1" />
+            <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+            <path d="M21 21v.01" />
+            <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+            <path d="M3 12h.01" />
+            <path d="M12 3h.01" />
+            <path d="M12 16v.01" />
+            <path d="M16 12h1" />
+            <path d="M21 12v.01" />
+            <path d="M12 21v-1" />
+          </svg>
+        </Styled.QrCodeButton>
+      </div>
 
       <form
         onSubmit={handleImageSubmit}
@@ -82,31 +112,12 @@ export function UserSidekickArea({
           gap: '10px',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-          }}
-        >
-          <Styled.UserFileInput
-            type="file"
-            name="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            placeholder="Submit an image file"
-          />
-          <Styled.QrCodeButton
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            aria-label="Show QR Code for Mobile Camera"
-            title="Show QR Code for Mobile Camera"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm10-2h6v6h-6V3zm2 2v2h2V5h-2zM3 15h6v6H3v-6zm2 2v2h2v-2H5zm6-14h2v2h-2V3zm0 4h2v2h-2V7zm4 4h2v2h-2v-2zm-4 0h2v2h-2v-2zm0 4h2v2h-2v-2zm4 4h2v2h-2v-2z" />
-            </svg>
-          </Styled.QrCodeButton>
-        </div>
+        <Styled.UserFileInput
+          type="file"
+          name="file"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
 
         {previewUrl && (
           <Styled.UserImagePreview src={previewUrl} alt="Preview" />
