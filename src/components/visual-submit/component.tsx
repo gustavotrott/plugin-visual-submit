@@ -51,7 +51,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
 
-      const response = await axios.post('/api/plugin/AssetsUploadSamplePlugin/fileUpload/', uploadFormData, {
+      const response = await axios.post('/api/plugin/VisualSubmit/fileUpload/', uploadFormData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'x-session-token': sessionToken,
