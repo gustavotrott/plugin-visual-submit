@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import {
-  Container,
   Title,
   Thumbnail,
   ListItem,
@@ -9,12 +8,11 @@ import {
   EmptyState,
 } from '../shared/styles';
 
-export const PresenterContainer = styled(Container)`
+export const PresenterContainer = styled.div`
   max-width: 600px;
 `;
 
 export const PresenterTitle = styled(Title)`
-  margin-bottom: 20px;
   font-size: 20px;
 `;
 
@@ -30,6 +28,19 @@ export const PresenterFileItem = styled(ListItem)`
 export const PresenterFileImage = styled(Thumbnail)`
   width: 80px;
   height: 80px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  
+  &:hover, &:focus {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: #007bff;
+  }
+  
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const PresenterFileType = styled.span`
@@ -49,7 +60,6 @@ export const PresenterEmptyState = styled(EmptyState)`
 `;
 
 export const PresenterUserHeader = styled.div`
-  background: #f5f5f5;
   padding: 10px;
   border-radius: 8px 8px 0 0;
   border-bottom: 1px solid #e0e0e0;
@@ -58,7 +68,6 @@ export const PresenterUserHeader = styled.div`
 `;
 
 export const PresenterUserImagesContainer = styled.div`
-  background: #fafafa;
   border-top: none;
   border-radius: 0 0 8px 8px;
   padding: 10px;

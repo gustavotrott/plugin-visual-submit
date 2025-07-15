@@ -51,11 +51,23 @@ export const ActionButton = styled.button`
   }
   
   &.delete {
-    background: #dc3545;
-    color: white;
+    background: transparent;
+    color: #6c757d;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      color: #dc3545;
+    }
   }
   
   &:hover {
     opacity: 0.8;
+  }
+  
+  &.delete:hover {
+    opacity: 1;
   }
 `;

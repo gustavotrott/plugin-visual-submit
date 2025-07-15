@@ -5,6 +5,7 @@ import * as DefaultStyled from '../shared/styles';
 import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
+import { TrashIcon } from '../../../utils/icons';
 
 interface PresenterSidekickAreaProps {
   submittedImages: DataChannelEntryResponseType<SubmitImage>[];
@@ -105,7 +106,17 @@ export function PresenterSidekickArea({
 
                   return (
                     <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
-                      <Styled.PresenterFileImage src={imageUrl} />
+                      <Styled.PresenterFileImage
+                        src={imageUrl}
+                        onClick={() => handleViewFile(imageUrl)}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleViewFile(imageUrl);
+                          }
+                        }}
+                      />
 
                       <DefaultStyled.Info>
                         <DefaultStyled.Text style={{ marginTop: '5px' }}>
@@ -117,15 +128,9 @@ export function PresenterSidekickArea({
 
                       <Styled.PresenterActionButtons>
                         <CommonStyled.ActionButton
-                          className="view"
-                          onClick={() => handleViewFile(imageUrl)}
-                        >
-                          View
-                        </CommonStyled.ActionButton>
-                        <CommonStyled.ActionButton
                           className="delete"
                         >
-                          Delete
+                          <TrashIcon />
                         </CommonStyled.ActionButton>
                       </Styled.PresenterActionButtons>
                     </Styled.PresenterFileItem>

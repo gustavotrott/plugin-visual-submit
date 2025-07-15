@@ -1,14 +1,8 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
-`;
-
 export const Title = styled.h2`
   color: #333;
-  margin: 0;
+  margin-top: 20px;
 `;
 
 export const Thumbnail = styled.img`

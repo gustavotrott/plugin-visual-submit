@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import {
-  Container,
   Title,
   Thumbnail,
   ListItem,
@@ -10,7 +9,7 @@ import {
   Text,
 } from '../shared/styles';
 
-export const UserContainer = styled(Container)`
+export const UserContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -94,6 +93,19 @@ export const UserSubmittedImageItem = styled(ListItem)`
 export const UserSubmittedImageThumbnail = styled(Thumbnail)`
   width: 60px;
   height: 60px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  
+  &:hover, &:focus {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: #007bff;
+  }
+  
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const UserSubmittedImageTime = styled(Text)`

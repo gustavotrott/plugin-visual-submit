@@ -8,6 +8,7 @@ import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { QrCodeModal } from '../../qr-code-modal/component';
+import { QRCodeIcon } from '../../../utils/icons';
 
 interface UserSidekickAreaProps {
   pluginApi: PluginApi;
@@ -85,20 +86,7 @@ export function UserSidekickArea({
           aria-label="Show QR Code for Mobile Camera"
           title="Show QR Code for Mobile Camera"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-qr-code-icon lucide-qr-code">
-            <rect width="5" height="5" x="3" y="3" rx="1" />
-            <rect width="5" height="5" x="16" y="3" rx="1" />
-            <rect width="5" height="5" x="3" y="16" rx="1" />
-            <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
-            <path d="M21 21v.01" />
-            <path d="M12 7v3a2 2 0 0 1-2 2H7" />
-            <path d="M3 12h.01" />
-            <path d="M12 3h.01" />
-            <path d="M12 16v.01" />
-            <path d="M16 12h1" />
-            <path d="M21 12v.01" />
-            <path d="M12 21v-1" />
-          </svg>
+          <QRCodeIcon />
         </Styled.QrCodeButton>
       </div>
 
@@ -160,6 +148,14 @@ export function UserSidekickArea({
                   <Styled.UserSubmittedImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"
+                    onClick={() => handleViewFile(imageUrl)}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleViewFile(imageUrl);
+                      }
+                    }}
                   />
                   <DefaultStyled.Info>
                     <Styled.UserSubmittedImageTime>
@@ -168,14 +164,6 @@ export function UserSidekickArea({
                       {formatUploadTime(new Date(file.createdAt))}
                     </Styled.UserSubmittedImageTime>
                   </DefaultStyled.Info>
-                  <Styled.UserSubmittedImageActions>
-                    <CommonStyled.ActionButton
-                      className="view"
-                      onClick={() => handleViewFile(imageUrl)}
-                    >
-                      View
-                    </CommonStyled.ActionButton>
-                  </Styled.UserSubmittedImageActions>
                 </Styled.UserSubmittedImageItem>
               );
             })}
