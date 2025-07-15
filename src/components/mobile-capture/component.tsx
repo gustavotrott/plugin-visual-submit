@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as Styled from './styles';
 import * as CommonStyled from '../../styles/common';
+import { CameraIcon } from '../../utils/icons';
 
 interface MobileCaptureProps {
   onImageCapture: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -61,7 +62,7 @@ export function MobileCapture({
             onClick={handleCameraButtonClick}
             disabled={isLoading}
           >
-            {isLoading ? 'Processing...' : 'Take Photo'}
+            <CameraIcon />
           </Styled.CameraButton>
 
           {isLoading && (

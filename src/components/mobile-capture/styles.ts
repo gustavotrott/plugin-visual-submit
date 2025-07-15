@@ -34,6 +34,10 @@ export const CaptureSection = styled.div`
 `;
 
 export const CameraButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: white;
   border: none;
   border-radius: 50%;

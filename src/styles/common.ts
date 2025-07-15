@@ -5,7 +5,6 @@ export const StatusMessage = styled.span`
   text-align: center;
   padding: 8px;
   border-radius: 4px;
-  margin-top: 5px;
   display: inline-block;
 `;
 
