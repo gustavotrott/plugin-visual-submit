@@ -13,9 +13,11 @@ sudo mkdir -p /var/www/bigbluebutton-default/assets/plugins
 sudo cp dist/manifest.json /var/www/bigbluebutton-default/assets/plugins/${LIBRARY_NAME}Manifest.json
 sudo cp dist/${LIBRARY_NAME}.js /var/www/bigbluebutton-default/assets/plugins/${LIBRARY_NAME}.js
 
+BBB_URL=$(bbb-conf --secret | grep '^ *URL:' | cut -d' ' -f6 | sed 's|/bigbluebutton/||')
+
 # Add config to load the plugin
 BBB_WEB_OVERRIDE_CONFIG_FILE="/etc/bigbluebutton/bbb-web.properties"
-TARGET_URL="https://$(hostname)/plugins/${LIBRARY_NAME}Manifest.json"
+TARGET_URL="${BBB_URL}/plugins/${LIBRARY_NAME}Manifest.json"
 
 echo "Adding plugin manifest to bbb-web config: $TARGET_URL"
 

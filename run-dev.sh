@@ -17,7 +17,8 @@ sudo mkdir -p /var/www/bigbluebutton-default/assets/plugins
 sudo cp manifest.json /var/www/bigbluebutton-default/assets/plugins/${LIBRARY_NAME}Manifest.json
 
 # Tweak manifest to load from development server
-TARGET_URL="https://$(hostname)/plugin-run-dev/${LIBRARY_NAME}.js"
+BBB_URL=$(bbb-conf --secret | grep '^ *URL:' | cut -d' ' -f6 | sed 's|/bigbluebutton/||')
+TARGET_URL="${BBB_URL}/plugin-run-dev/${LIBRARY_NAME}.js"
 MANIFEST_PATH=/var/www/bigbluebutton-default/assets/plugins/${LIBRARY_NAME}Manifest.json
 jq --arg val "$TARGET_URL" '.javascriptEntrypointUrl = $val' $MANIFEST_PATH > temp.json && sudo mv temp.json $MANIFEST_PATH
 
