@@ -1,5 +1,9 @@
 import {
-  BbbPluginSdk, DataChannelTypes, GenericContentSidekickArea, pluginLogger,
+  BbbPluginSdk,
+  DataChannelPushEntryFunctionUserRole,
+  DataChannelTypes,
+  GenericContentSidekickArea,
+  pluginLogger,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom/client';
@@ -69,7 +73,12 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
         },
       };
 
-      pushSubmitImage(submitData);
+      pushSubmitImage(submitData, {
+        receivers: [
+          { userId: currentUser.userId },
+          { role: DataChannelPushEntryFunctionUserRole.PRESENTER },
+        ],
+      });
       e?.currentTarget?.reset();
       setSubmitSuccess(true);
       // setTimeout(() => {
