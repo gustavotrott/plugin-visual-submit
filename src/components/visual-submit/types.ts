@@ -20,6 +20,22 @@ export interface UserMetadataGraphqlResponse {
   user_metadata: UserMetadata[];
 }
 
+export interface SessionCurrent {
+  sessionName: string;
+}
+
+export interface UserSessionCurrentGraphqlResponse {
+  user_session_current: SessionCurrent[];
+}
+
+export interface UserSessionsCountGraphqlResponse {
+  user_session_aggregate: {
+    aggregate: {
+      count: number;
+    };
+  };
+}
+
 export interface AllUsersInfoGraphqlResponse {
   user: AllUsersData[];
 }

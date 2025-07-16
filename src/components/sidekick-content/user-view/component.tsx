@@ -38,7 +38,7 @@ export function UserSidekickArea({
   const generatePhotoSessionUrl = async () => {
     const joinUrl = await pluginApi.getJoinUrl({
       enforceLayout: 'PRESENTATION_ONLY',
-      'userdata-is_mobile_capture': '1',
+      sessionName: 'visualSubmitMobileCaptureSession',
       'userdata-bbb_hide_controls': 'true',
       'userdata-bbb_auto_join_audio': 'false',
       'userdata-bbb_auto_share_webcam': 'false',
