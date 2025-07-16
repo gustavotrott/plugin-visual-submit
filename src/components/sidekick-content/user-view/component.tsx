@@ -71,14 +71,7 @@ export function UserSidekickArea({
 
   return (
     <Styled.UserContainer>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '5px',
-        }}
-      >
+      <Styled.UserHeaderContainer>
         <Styled.UserTitle>Submit Visual Content</Styled.UserTitle>
         <Styled.QrCodeButton
           type="button"
@@ -88,17 +81,10 @@ export function UserSidekickArea({
         >
           <QRCodeIcon />
         </Styled.QrCodeButton>
-      </div>
+      </Styled.UserHeaderContainer>
 
-      <form
+      <Styled.UserFormContainer
         onSubmit={handleImageSubmit}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
       >
         <Styled.UserFileInput
           type="file"
@@ -123,7 +109,7 @@ export function UserSidekickArea({
         >
           Submit Image
         </Styled.UserSubmitButton>
-      </form>
+      </Styled.UserFormContainer>
 
       <QrCodeModal
         isOpen={isModalOpen}

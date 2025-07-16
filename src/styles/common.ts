@@ -37,36 +37,18 @@ export const LoadingSpinner = styled.span`
   }
 `;
 
-export const ActionButton = styled.button`
+export const DeleteButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  padding: 6px 12px;
-  font-size: 12px;
-  
-  &.view {
-    background: #28a745;
-    color: white;
-  }
-  
-  &.delete {
-    background: transparent;
-    color: #6c757d;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    &:hover {
-      color: #dc3545;
-    }
-  }
+  background: transparent;
+  color: #6c757d;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
-    opacity: 0.8;
-  }
-  
-  &.delete:hover {
-    opacity: 1;
+    color: #dc3545;
   }
 `;

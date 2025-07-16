@@ -61,7 +61,7 @@ export function PresenterSidekickArea({
   };
 
   return (
-    <Styled.PresenterContainer>
+    <DefaultStyled.BaseContainer>
       <Styled.PresenterTitle>
         Submitted Visual Content
         {' '}
@@ -127,11 +127,9 @@ export function PresenterSidekickArea({
                       </DefaultStyled.Info>
 
                       <Styled.PresenterActionButtons>
-                        <CommonStyled.ActionButton
-                          className="delete"
-                        >
+                        <CommonStyled.DeleteButton>
                           <TrashIcon />
-                        </CommonStyled.ActionButton>
+                        </CommonStyled.DeleteButton>
                       </Styled.PresenterActionButtons>
                     </Styled.PresenterFileItem>
                   );
@@ -141,6 +139,6 @@ export function PresenterSidekickArea({
           ))}
         </Styled.PresenterFilesList>
       )}
-    </Styled.PresenterContainer>
+    </DefaultStyled.BaseContainer>
   );
 }

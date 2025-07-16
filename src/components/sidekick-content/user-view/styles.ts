@@ -1,23 +1,53 @@
 import styled from 'styled-components';
 import {
-  Title,
   Thumbnail,
-  ListItem,
-  List,
-  Actions,
-  EmptyState,
   Text,
+  BaseContainer,
+  ScrollableList,
+  ClickableThumbnail,
+  ResponsiveTitle,
+  MobileEmptyState,
+  MobileListItem,
 } from '../shared/styles';
 
-export const UserContainer = styled.div`
-  display: flex;
-  flex-direction: column;
+export const UserContainer = styled(BaseContainer)`
   gap: 15px;
   max-width: 400px;
+  padding-right: 10px;
 `;
 
-export const UserTitle = styled(Title)`
+export const UserTitle = styled(ResponsiveTitle)`
   font-size: 18px;
+  
+  @media (max-height: 600px) {
+    font-size: 16px;
+    margin-bottom: 0;
+  }
+`;
+
+export const UserFormContainer = styled.form`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0; /* Prevent form from shrinking on mobile */
+  
+  @media (max-height: 600px) {
+    gap: 8px;
+  }
+`;
+
+export const UserHeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  
+  @media (max-height: 600px) {
+    margin-bottom: 5px;
+  }
 `;
 
 export const UserFileInput = styled.input`
@@ -43,12 +73,23 @@ export const UserFileInput = styled.input`
     background: #e3f2fd;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
+  
+  @media (max-height: 600px) {
+    padding: 15px;
+    font-size: 13px;
+  }
 `;
 
 export const UserImagePreview = styled(Thumbnail)`
   width: 100%;
   height: 100%;
   margin-top: 10px;
+  
+  @media (max-height: 600px) {
+    max-height: 120px;
+    object-fit: cover;
+    margin-top: 5px;
+  }
 `;
 
 export const UserSubmitButton = styled.button`
@@ -72,6 +113,15 @@ export const UserSubmitButton = styled.button`
 
 export const UserSubmittedImagesContainer = styled.div`
   border-top: 1px solid #ddd;
+  flex: 1;
+  min-height: 0; /* Allow flex item to shrink */
+  
+  /* On mobile, limit the height of submitted images to ensure form is always visible */
+  @media (max-height: 600px) {
+    display: flex;
+    flex-direction: column;
+    max-height: 300px;
+  }
 `;
 
 export const UserSubmittedImagesLabel = styled.h3`
@@ -79,33 +129,32 @@ export const UserSubmittedImagesLabel = styled.h3`
   color: #333;
   font-size: 16px;
   font-weight: 500;
+  flex-shrink: 0;
+  
+  @media (max-height: 600px) {
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
 `;
 
-export const UserSubmittedImagesList = styled(List)`
+export const UserSubmittedImagesList = styled(ScrollableList)`
   gap: 10px;
+  
+  /* Mobile-specific scrolling for image list */
+  @media (max-height: 600px) {
+    max-height: 200px;
+  }
 `;
 
-export const UserSubmittedImageItem = styled(ListItem)`
+export const UserSubmittedImageItem = styled(MobileListItem)`
   padding: 12px;
   gap: 12px;
 `;
 
-export const UserSubmittedImageThumbnail = styled(Thumbnail)`
+export const UserSubmittedImageThumbnail = styled(ClickableThumbnail)`
   width: 60px;
   height: 60px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 2px solid transparent;
-  
-  &:hover, &:focus {
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    border-color: #007bff;
-  }
-  
-  &:focus {
-    outline: none;
-  }
 `;
 
 export const UserSubmittedImageTime = styled(Text)`
@@ -113,13 +162,12 @@ export const UserSubmittedImageTime = styled(Text)`
   margin-bottom: 4px;
 `;
 
-export const UserSubmittedImageActions = styled(Actions)`
-  gap: 6px;
-`;
-
-export const UserEmptySubmittedState = styled(EmptyState)`
-  padding: 20px;
+export const UserEmptySubmittedState = styled(MobileEmptyState)`
   font-size: 14px;
+  
+  @media (max-height: 600px) {
+    font-size: 13px;
+  }
 `;
 
 export const QrCodeButton = styled.button`
@@ -134,6 +182,7 @@ export const QrCodeButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   
   &:hover {
     background: #5a6268;
@@ -142,5 +191,11 @@ export const QrCodeButton = styled.button`
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(108, 117, 125, 0.25);
+  }
+  
+  @media (max-height: 600px) {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
   }
 `;
