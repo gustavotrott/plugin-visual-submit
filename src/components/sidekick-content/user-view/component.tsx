@@ -43,6 +43,7 @@ export function UserSidekickArea({
       'userdata-bbb_auto_join_audio': 'false',
       'userdata-bbb_auto_share_webcam': 'false',
       'userdata-bbb_show_session_details_on_join': 'false',
+      'userdata-bbb_hide_notifications': 'true',
     });
     setPhotoSessionUrl(joinUrl);
   };
