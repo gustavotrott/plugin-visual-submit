@@ -12,8 +12,14 @@ import axios from 'axios';
 import { PresenterSidekickArea } from '../sidekick-content/presenter-view/component';
 import { UserSidekickArea } from '../sidekick-content/user-view/component';
 import { MobileCapture } from '../mobile-capture/component';
-import { SubmitImage, UserMetadataGraphqlResponse } from './types';
-import { USERS_METADATA } from '../sidekick-content/user-view/queries';
+import {
+  SubmitImage,
+  UserSessionCurrentGraphqlResponse,
+  UserSessionsCountGraphqlResponse,
+} from './types';
+import {
+  USER_OTHER_SESSIONS_COUNT, USER_SESSION_CURRENT,
+} from '../sidekick-content/user-view/queries';
 
 interface PluginVisualSubmitProps {
   pluginUuid: string;
@@ -21,12 +27,35 @@ interface PluginVisualSubmitProps {
 
 function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.ReactElement {
   BbbPluginSdk.initialize(pluginUuid);
+  const sessionClosedIntervalRef = React.useRef<ReturnType<typeof setTimeout>>();
   const pluginApi = BbbPluginSdk.getPluginApi(pluginUuid, 'plugin-visual-submit');
 
   const { data: currentUser } = pluginApi.useCurrentUser();
+
+  // Close mobile session if it's the only session for 20 seconds
   const {
-    data: userMetadata,
-  } = pluginApi.useCustomSubscription<UserMetadataGraphqlResponse>(USERS_METADATA);
+    data: userOtherSessionsCount,
+  } = pluginApi.useCustomSubscription<UserSessionsCountGraphqlResponse>(USER_OTHER_SESSIONS_COUNT);
+  React.useEffect(() => {
+    if (userOtherSessionsCount) {
+      const countSessions = userOtherSessionsCount?.user_session_aggregate?.aggregate?.count || 0;
+      if (countSessions === 0) {
+        sessionClosedIntervalRef.current = setTimeout(() => {
+          const appElement = document.getElementById('app');
+          if (appElement) {
+            window.location.href = 'about:blank';
+          }
+        }, 20000);
+      } else {
+        clearInterval(sessionClosedIntervalRef.current);
+      }
+    }
+  }, [userOtherSessionsCount]);
+
+  const {
+    data: userSessionCurrent,
+  } = pluginApi.useCustomSubscription<UserSessionCurrentGraphqlResponse>(USER_SESSION_CURRENT);
+
   const {
     data: submitImageResponseData,
     pushEntry: pushSubmitImage,
@@ -121,12 +150,8 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   };
 
   React.useEffect(() => {
-    if (!userMetadata) return;
-
-    // eslint-disable-next-line arrow-body-style
-    const isMobileCapture = userMetadata.user_metadata.some((currUserMetadata) => {
-      return currUserMetadata.parameter === 'is_mobile_capture' && currUserMetadata.value === '1';
-    });
+    if (!userSessionCurrent) return;
+    const isMobileCapture = userSessionCurrent.user_session_current[0].sessionName === 'visualSubmitMobileCaptureSession';
 
     if (isMobileCapture) {
       const appElement = document.getElementById('app');
@@ -184,7 +209,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
     ]);
   }, [
     currentUser,
-    userMetadata,
+    userSessionCurrent,
     submitImageResponseData,
     pluginApi,
     handleImageSubmit,
