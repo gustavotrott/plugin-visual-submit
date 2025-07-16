@@ -6,3 +6,12 @@ subscription userMetadata {
   }
 }
 `;
+
+export const ALL_USERS_INFO = `
+subscription allUsersInfo {
+  user {
+    userId
+    name
+  }
+}
+`;

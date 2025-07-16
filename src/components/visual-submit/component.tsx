@@ -24,13 +24,14 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   const pluginApi = BbbPluginSdk.getPluginApi(pluginUuid, 'plugin-visual-submit');
 
   const { data: currentUser } = pluginApi.useCurrentUser();
-  const {
-    data: userMetadata,
-  } = pluginApi.useCustomSubscription<UserMetadataGraphqlResponse>(USERS_METADATA);
+
   const {
     data: submitImageResponseData,
     pushEntry: pushSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+  const {
+    data: userMetadata,
+  } = pluginApi.useCustomSubscription<UserMetadataGraphqlResponse>(USERS_METADATA);
 
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = React.useState<boolean>(false);
@@ -159,6 +160,8 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
               <PresenterSidekickArea
                 {...{
                   submittedImages: submitImageResponseData?.data || [],
+                  pluginApi,
+                  currentUser,
                 }}
               />,
             );
@@ -185,7 +188,6 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   }, [
     currentUser,
     userMetadata,
-    submitImageResponseData,
     pluginApi,
     handleImageSubmit,
   ]);

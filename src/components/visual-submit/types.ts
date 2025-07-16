@@ -11,6 +11,15 @@ export interface UserMetadata {
   value: string;
 }
 
+export interface AllUsersData {
+  userId: string;
+  name: string;
+}
+
 export interface UserMetadataGraphqlResponse {
   user_metadata: UserMetadata[];
+}
+
+export interface AllUsersInfoGraphqlResponse {
+  user: AllUsersData[];
 }
