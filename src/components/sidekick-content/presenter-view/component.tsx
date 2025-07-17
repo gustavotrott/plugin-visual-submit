@@ -131,10 +131,9 @@ export function PresenterSidekickArea({
             <div key={userGroup.user.userId}>
               <Styled.PresenterUserHeader>
                 {userGroup.user.userName}
-                {' - '}
+                {' ('}
                 {userGroup.images.length}
-                {' '}
-                {userGroup.images.length === 1 ? 'image' : 'images'}
+                )
               </Styled.PresenterUserHeader>
 
               {userGroup.images.length > 0 && (

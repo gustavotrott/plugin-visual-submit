@@ -67,7 +67,7 @@ export function MobileCapture({
 
           {isLoading && (
             <CommonStyled.LoadingMessage>
-              Loading
+              Uploading
               <CommonStyled.LoadingSpinner />
             </CommonStyled.LoadingMessage>
           )}

@@ -132,7 +132,7 @@ export function UserSidekickArea({
       />
 
       <Styled.UserSubmittedImagesContainer>
-        <Styled.UserSubmittedImagesLabel>Submitted Images</Styled.UserSubmittedImagesLabel>
+        <Styled.UserSubmittedImagesLabel>Your Submitted Images</Styled.UserSubmittedImagesLabel>
         {userSubmittedImages.length === 0 ? (
           <Styled.UserEmptySubmittedState>
             No images have been submitted yet.
