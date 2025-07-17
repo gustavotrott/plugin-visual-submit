@@ -3,6 +3,7 @@ import {
   DataChannelEntryResponseType,
   PluginApi,
   CurrentUserData,
+  DataChannelTypes,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
@@ -13,13 +14,11 @@ import { TrashIcon } from '../../../utils/icons';
 import { ALL_USERS_INFO } from '../user-view/queries';
 
 interface PresenterSidekickAreaProps {
-  submittedImages: DataChannelEntryResponseType<SubmitImage>[];
   pluginApi: PluginApi;
   currentUser: CurrentUserData;
 }
 
 export function PresenterSidekickArea({
-  submittedImages,
   pluginApi,
   currentUser,
 }: PresenterSidekickAreaProps): React.ReactElement {
@@ -28,10 +27,16 @@ export function PresenterSidekickArea({
     data: allUsersInfo,
   } = pluginApi.useCustomSubscription<AllUsersInfoGraphqlResponse>(ALL_USERS_INFO);
 
+  const {
+    data: submitImageResponseData,
+  } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+
+  const submittedImages = submitImageResponseData?.data || [];
+
   // Count images per user
   const userImageCounts = React.useMemo(() => {
     const counts = new Map<string, number>();
-    submittedImages.forEach((image) => {
+    submittedImages?.forEach((image) => {
       const { submittedBy } = image.payloadJson;
       counts.set(submittedBy.userId, (counts.get(submittedBy.userId) || 0) + 1);
     });
@@ -41,7 +46,7 @@ export function PresenterSidekickArea({
   // Filter images by selected user
   const filteredImages = React.useMemo(() => {
     if (!selectedUserId) return submittedImages;
-    return submittedImages.filter((image) => (
+    return submittedImages?.filter((image) => (
       image.payloadJson.submittedBy.userId === selectedUserId
     ));
   }, [submittedImages, selectedUserId]);

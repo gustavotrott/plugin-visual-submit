@@ -36,6 +36,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   const {
     data: userOtherSessionsCount,
   } = pluginApi.useCustomSubscription<UserSessionsCountGraphqlResponse>(USER_OTHER_SESSIONS_COUNT);
+
   React.useEffect(() => {
     if (userOtherSessionsCount) {
       const countSessions = userOtherSessionsCount?.user_session_aggregate?.aggregate?.count || 0;
@@ -57,7 +58,6 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   } = pluginApi.useCustomSubscription<UserSessionCurrentGraphqlResponse>(USER_SESSION_CURRENT);
 
   const {
-    data: submitImageResponseData,
     pushEntry: pushSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
 
@@ -67,7 +67,9 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   const params = new URLSearchParams(window.location.search);
   const sessionToken = params.get('sessionToken');
 
-  const handleImageSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleImageSubmit = React.useCallback(async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -110,9 +112,6 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
       });
       e?.currentTarget?.reset();
       setSubmitSuccess(true);
-      // setTimeout(() => {
-      //   setSubmitSuccess(false);
-      // }, 3000);
     } catch (error) {
       pluginLogger.error('Upload error', error);
 
@@ -147,7 +146,52 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
 
       setSubmitError('Upload failed. Please check your connection and try again.');
     }
-  };
+  }, [currentUser?.userId, currentUser?.name, sessionToken, pushSubmitImage]);
+
+  React.useEffect(() => {
+    if (!currentUser || !pluginApi) return;
+
+    pluginApi.setGenericContentItems([
+      new GenericContentSidekickArea({
+        id: 'visual-submit-sidekick',
+        name: 'Visual Submit',
+        section: 'Visual Submit',
+        buttonIcon: 'video',
+        open: false,
+        contentFunction: (element: HTMLElement) => {
+          const root = ReactDOM.createRoot(element);
+          if (currentUser?.presenter) {
+            root.render(
+              <PresenterSidekickArea
+                {...{
+                  pluginApi,
+                  currentUser,
+                }}
+              />,
+            );
+          } else {
+            root.render(
+              <UserSidekickArea
+                {...{
+                  pluginApi,
+                  handleImageSubmit,
+                  currentUser,
+                  submitError,
+                  setSubmitError,
+                }}
+              />,
+            );
+          }
+
+          return root;
+        },
+      }),
+    ]);
+  }, [
+    currentUser?.presenter,
+    currentUser?.userId,
+    submitError,
+  ]);
 
   React.useEffect(() => {
     if (!userSessionCurrent) return;
@@ -167,54 +211,8 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           />,
         );
       }
-      return;
     }
-
-    pluginApi.setGenericContentItems([
-      new GenericContentSidekickArea({
-        id: 'visual-submit-sidekick',
-        name: 'Visual Submit',
-        section: 'Visual Submit',
-        buttonIcon: 'video',
-        open: false,
-        contentFunction: (element: HTMLElement) => {
-          const root = ReactDOM.createRoot(element);
-          if (currentUser?.presenter) {
-            root.render(
-              <PresenterSidekickArea
-                {...{
-                  submittedImages: submitImageResponseData?.data || [],
-                  pluginApi,
-                  currentUser,
-                }}
-              />,
-            );
-          } else {
-            root.render(
-              <UserSidekickArea
-                {...{
-                  pluginApi,
-                  handleImageSubmit,
-                  currentUser,
-                  submitImageResponseData: submitImageResponseData?.data || [],
-                  submitError,
-                  setSubmitError,
-                  submitSuccess,
-                }}
-              />,
-            );
-          }
-
-          return root;
-        },
-      }),
-    ]);
-  }, [
-    currentUser,
-    userSessionCurrent,
-    pluginApi,
-    handleImageSubmit,
-  ]);
+  }, [userSessionCurrent, handleImageSubmit, submitError, submitSuccess]);
 
   return null;
 }

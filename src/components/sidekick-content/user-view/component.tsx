@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
-  CurrentUserData, DataChannelEntryResponseType, PluginApi,
+  CurrentUserData,
+  PluginApi,
+  DataChannelTypes,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
@@ -16,7 +18,6 @@ interface UserSidekickAreaProps {
   submitError: string | null;
   setSubmitError: React.Dispatch<React.SetStateAction<string | null>>;
   handleImageSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  submitImageResponseData: DataChannelEntryResponseType<SubmitImage>[];
 }
 
 export function UserSidekickArea({
@@ -25,14 +26,19 @@ export function UserSidekickArea({
   submitError,
   setSubmitError,
   handleImageSubmit,
-  submitImageResponseData,
 }: UserSidekickAreaProps): React.ReactElement {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [photoSessionUrl, setPhotoSessionUrl] = React.useState<string | null>(null);
 
-  const userSubmittedImages = submitImageResponseData
+  const {
+    data: submitImageResponseData,
+  } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+
+  const submittedImages = submitImageResponseData?.data || [];
+
+  const userSubmittedImages = submittedImages
     .filter((item) => item.payloadJson.submittedBy.userId === currentUser.userId);
 
   const generatePhotoSessionUrl = async () => {
@@ -51,20 +57,26 @@ export function UserSidekickArea({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      setSelectedFile(file);
+      setSubmitError(null);
 
       const url = URL.createObjectURL(file);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
       setPreviewUrl(url);
-      setSubmitError(null);
+      setSelectedFile(file);
     }
   };
 
-  // Cleanup preview URL when component unmounts
-  React.useEffect(() => () => {
+  const handleUserImageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleImageSubmit(e);
+    setSelectedFile(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
     }
-  }, [previewUrl]);
+  };
 
   const handleViewFile = (fileUrl: string) => {
     window.open(fileUrl, '_blank');
@@ -85,7 +97,7 @@ export function UserSidekickArea({
       </Styled.UserHeaderContainer>
 
       <Styled.UserFormContainer
-        onSubmit={handleImageSubmit}
+        onSubmit={handleUserImageSubmit}
       >
         <Styled.UserFileInput
           type="file"
