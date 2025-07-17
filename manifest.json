@@ -2,6 +2,9 @@
   "requiredSdkVersion": "~0.0.84",
   "name": "VisualSubmit",
   "javascriptEntrypointUrl": "VisualSubmit.js",
+  "eventPersistence": {
+    "isEnabled": true
+  },
   "remoteDataSources": [
     {
       "name": "fileUpload",

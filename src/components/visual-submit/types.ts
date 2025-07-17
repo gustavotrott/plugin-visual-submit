@@ -3,7 +3,8 @@ export interface SubmitImage {
   submittedBy: {
     userId: string;
     userName: string;
-  }
+  };
+  renderedInLAD: boolean;
 }
 
 export interface UserMetadata {
