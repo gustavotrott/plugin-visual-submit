@@ -25,7 +25,6 @@ export const PresenterFilesList = styled(ScrollableList)`
 `;
 
 export const PresenterFileItem = styled(MobileListItem)`
-  padding: 15px;
   gap: 15px;
 `;
 
@@ -42,11 +41,14 @@ export const PresenterEmptyState = styled(MobileEmptyState)`
 `;
 
 export const PresenterUserHeader = styled.div`
-  margin: 10px;
+  margin: 10px 0px;
   border-radius: 8px 8px 0 0;
   border-bottom: 1px solid #e0e0e0;
   font-weight: bold;
   color: #333;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
   
   @media (max-height: 600px) {
     margin: 8px;
