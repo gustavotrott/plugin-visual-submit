@@ -1,15 +1,24 @@
 import * as React from 'react';
-import { DataChannelEntryResponseType, DeleteEntryFunction, RESET_DATA_CHANNEL } from 'bigbluebutton-html-plugin-sdk';
+import {
+  PluginApi,
+  CurrentUserData,
+  DataChannelTypes,
+  DeleteEntryFunction,
+  RESET_DATA_CHANNEL,
+  DataChannelEntryResponseType,
+} from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
 import * as CommonStyled from '../../../styles/common';
-import { SubmitImage } from '../../visual-submit/types';
+import { AllUsersInfoGraphqlResponse, SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { TrashIcon } from '../../../utils/icons';
+import { ALL_USERS_INFO } from '../user-view/queries';
 
 interface PresenterSidekickAreaProps {
-  submittedImages: DataChannelEntryResponseType<SubmitImage>[];
   deleteSubmitImage: DeleteEntryFunction;
+  pluginApi: PluginApi;
+  currentUser: CurrentUserData;
 }
 
 interface TrashIconProps {
@@ -38,52 +47,74 @@ function TrashButtonIcon({ isOpen, onClick }: TrashIconProps) {
 }
 
 export function PresenterSidekickArea({
-  submittedImages,
+  pluginApi,
+  currentUser,
   deleteSubmitImage,
 }: PresenterSidekickAreaProps): React.ReactElement {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
   const [printClicked, setPrintClicked] = React.useState(false);
   const [clearAllClicked, setClearAllClicked] = React.useState(false);
+  const {
+    data: allUsersInfo,
+  } = pluginApi.useCustomSubscription<AllUsersInfoGraphqlResponse>(ALL_USERS_INFO);
 
-  const uniqueUsers = React.useMemo(() => {
-    const users = new Map<string, { userId: string; userName: string; }>();
-    submittedImages.forEach((image) => {
+  const {
+    data: submitImageResponseData,
+  } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+
+  const submittedImages = submitImageResponseData?.data || [];
+
+  // Count images per user
+  const userImageCounts = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    submittedImages?.forEach((image) => {
       const { submittedBy } = image.payloadJson;
-      if (!users.has(submittedBy.userId)) {
-        users.set(submittedBy.userId, submittedBy);
-      }
+      counts.set(submittedBy.userId, (counts.get(submittedBy.userId) || 0) + 1);
     });
-    return Array.from(users.values());
+    return counts;
   }, [submittedImages]);
 
   // Filter images by selected user
   const filteredImages = React.useMemo(() => {
     if (!selectedUserId) return submittedImages;
-    return submittedImages.filter((image) => (
+    return submittedImages?.filter((image) => (
       image.payloadJson.submittedBy.userId === selectedUserId
     ));
   }, [submittedImages, selectedUserId]);
 
-  // Group images by user
+  // Group images by all users in the meeting
   const groupedImages = React.useMemo(() => {
+    if (!allUsersInfo?.user) return [];
+
     const groups = new Map<string, {
       user: { userId: string; userName: string; };
       images: DataChannelEntryResponseType<SubmitImage>[];
     }>();
 
-    filteredImages.forEach((image) => {
-      const { submittedBy } = image.payloadJson;
-      if (!groups.has(submittedBy.userId)) {
-        groups.set(submittedBy.userId, {
-          user: submittedBy,
+    // Initialize groups for all users (exclude current user/presenter)
+    allUsersInfo.user.forEach((user) => {
+      const isNotCurrentUser = user.userId !== currentUser.userId;
+      const isSelectedUser = !selectedUserId || user.userId === selectedUserId;
+
+      if (isNotCurrentUser && isSelectedUser) {
+        groups.set(user.userId, {
+          user: { userId: user.userId, userName: user.name },
           images: [],
         });
       }
-      groups.get(submittedBy.userId)!.images.push(image);
+    });
+
+    // Add images to respective user groups
+    filteredImages.forEach((image) => {
+      const { submittedBy } = image.payloadJson;
+      const group = groups.get(submittedBy.userId);
+      if (group) {
+        group.images.push(image);
+      }
     });
 
     return Array.from(groups.values());
-  }, [filteredImages]);
+  }, [filteredImages, allUsersInfo?.user, selectedUserId, currentUser.userId]);
 
   const handleViewFile = (fileUrl: string) => {
     window.open(fileUrl, '_blank');
@@ -94,10 +125,10 @@ export function PresenterSidekickArea({
       <Styled.PresenterTitle>
         Submitted Visual Content
         {' '}
-        {filteredImages.length > 0 && `(${filteredImages.length})`}
+        {filteredImages?.length > 0 && `(${filteredImages?.length})`}
       </Styled.PresenterTitle>
 
-      {uniqueUsers.length > 0 && (
+      {allUsersInfo?.user?.length > 0 && (
         <Styled.PresenterFilterContainer>
           <TrashButtonIcon
             isOpen={clearAllClicked}
@@ -120,11 +151,19 @@ export function PresenterSidekickArea({
             onChange={(e) => setSelectedUserId(e.target.value || null)}
           >
             <option value="">All Users</option>
-            {uniqueUsers.map((user) => (
-              <option key={user.userId} value={user.userId}>
-                {user.userName}
-              </option>
-            ))}
+            {allUsersInfo?.user
+              .filter((user) => user.userId !== currentUser.userId)
+              .map((user) => {
+                const imageCount = userImageCounts.get(user.userId) || 0;
+                return (
+                  <option key={user.userId} value={user.userId}>
+                    {user.name}
+                    {' ('}
+                    {imageCount}
+                    )
+                  </option>
+                );
+              })}
           </Styled.PresenterUserFilterSelect>
           <Styled.PrintButton
             type="button"
@@ -228,9 +267,9 @@ export function PresenterSidekickArea({
         </Styled.PresenterFilterContainer>
       )}
 
-      {filteredImages.length === 0 ? (
+      {groupedImages.length === 0 ? (
         <Styled.PresenterEmptyState>
-          No files have been submitted yet.
+          No users found.
         </Styled.PresenterEmptyState>
       ) : (
         <Styled.PresenterFilesList>
@@ -238,52 +277,54 @@ export function PresenterSidekickArea({
             <div key={userGroup.user.userId}>
               <Styled.PresenterUserHeader>
                 {userGroup.user.userName}
-                {' - '}
+                {' ('}
                 {userGroup.images.length}
-                {' '}
-                {userGroup.images.length === 1 ? 'image' : 'images'}
+                )
               </Styled.PresenterUserHeader>
 
-              <Styled.PresenterUserImagesContainer>
-                {userGroup.images.map((file) => {
-                  const { imageUrl } = file.payloadJson;
+              {userGroup.images.length > 0 && (
+                <Styled.PresenterUserImagesContainer>
+                  {userGroup.images.map((file) => {
+                    const { imageUrl } = file.payloadJson;
 
-                  return (
-                    <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
-                      <Styled.PresenterFileImage
-                        src={imageUrl}
-                        onClick={() => handleViewFile(imageUrl)}
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleViewFile(imageUrl);
-                          }
-                        }}
-                      />
+                    return (
+                      <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
+                        <Styled.PresenterFileImage
+                          src={imageUrl}
+                          onClick={() => handleViewFile(imageUrl)}
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleViewFile(imageUrl);
+                            }
+                          }}
+                        />
 
-                      <DefaultStyled.Info>
-                        <DefaultStyled.Text style={{ marginTop: '5px' }}>
-                          Uploaded
-                          {' '}
-                          {formatUploadTime(new Date(file.createdAt))}
-                        </DefaultStyled.Text>
-                      </DefaultStyled.Info>
+                        <DefaultStyled.Info>
+                          <DefaultStyled.Text style={{ marginTop: '5px' }}>
+                            Uploaded
+                            {' '}
+                            {formatUploadTime(new Date(file.createdAt))}
+                          </DefaultStyled.Text>
+                        </DefaultStyled.Info>
 
-                      <Styled.PresenterActionButtons>
-                        <CommonStyled.DeleteButton onClick={() => {
-                          if (window.confirm('Are you sure you want to delete this image?')) {
-                            deleteSubmitImage([file.entryId]);
-                          }
-                        }}
-                        >
-                          <TrashIcon />
-                        </CommonStyled.DeleteButton>
-                      </Styled.PresenterActionButtons>
-                    </Styled.PresenterFileItem>
-                  );
-                })}
-              </Styled.PresenterUserImagesContainer>
+                        <Styled.PresenterActionButtons>
+                          <CommonStyled.DeleteButton onClick={() => {
+                            // eslint-disable-next-line no-alert
+                            if (window.confirm('Are you sure you want to delete this image?')) {
+                              deleteSubmitImage([file.entryId]);
+                            }
+                          }}
+                          >
+                            <TrashIcon />
+                          </CommonStyled.DeleteButton>
+                        </Styled.PresenterActionButtons>
+                      </Styled.PresenterFileItem>
+                    );
+                  })}
+                </Styled.PresenterUserImagesContainer>
+              )}
             </div>
           ))}
         </Styled.PresenterFilesList>

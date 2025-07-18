@@ -12,8 +12,14 @@ import axios from 'axios';
 import { PresenterSidekickArea } from '../sidekick-content/presenter-view/component';
 import { UserSidekickArea } from '../sidekick-content/user-view/component';
 import { MobileCapture } from '../mobile-capture/component';
-import { SubmitImage, UserMetadataGraphqlResponse } from './types';
-import { USERS_METADATA } from '../sidekick-content/user-view/queries';
+import {
+  SubmitImage,
+  UserSessionCurrentGraphqlResponse,
+  UserSessionsCountGraphqlResponse,
+} from './types';
+import {
+  USER_OTHER_SESSIONS_COUNT, USER_SESSION_CURRENT,
+} from '../sidekick-content/user-view/queries';
 
 interface PluginVisualSubmitProps {
   pluginUuid: string;
@@ -21,14 +27,37 @@ interface PluginVisualSubmitProps {
 
 function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.ReactElement {
   BbbPluginSdk.initialize(pluginUuid);
+  const sessionClosedIntervalRef = React.useRef<ReturnType<typeof setTimeout>>();
   const pluginApi = BbbPluginSdk.getPluginApi(pluginUuid, 'plugin-visual-submit');
 
   const { data: currentUser } = pluginApi.useCurrentUser();
+
+  // Close mobile session if it's the only session for 20 seconds
   const {
-    data: userMetadata,
-  } = pluginApi.useCustomSubscription<UserMetadataGraphqlResponse>(USERS_METADATA);
+    data: userOtherSessionsCount,
+  } = pluginApi.useCustomSubscription<UserSessionsCountGraphqlResponse>(USER_OTHER_SESSIONS_COUNT);
+
+  React.useEffect(() => {
+    if (userOtherSessionsCount) {
+      const countSessions = userOtherSessionsCount?.user_session_aggregate?.aggregate?.count || 0;
+      if (countSessions === 0) {
+        sessionClosedIntervalRef.current = setTimeout(() => {
+          const appElement = document.getElementById('app');
+          if (appElement) {
+            window.location.href = 'about:blank';
+          }
+        }, 20000);
+      } else {
+        clearInterval(sessionClosedIntervalRef.current);
+      }
+    }
+  }, [userOtherSessionsCount]);
+
   const {
-    data: submitImageResponseData,
+    data: userSessionCurrent,
+  } = pluginApi.useCustomSubscription<UserSessionCurrentGraphqlResponse>(USER_SESSION_CURRENT);
+
+  const {
     pushEntry: pushSubmitImage,
     deleteEntry: deleteSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
@@ -39,7 +68,9 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   const params = new URLSearchParams(window.location.search);
   const sessionToken = params.get('sessionToken');
 
-  const handleImageSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleImageSubmit = React.useCallback(async (
+    e: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     e.preventDefault();
     setSubmitError(null);
     setSubmitSuccess(false);
@@ -82,9 +113,6 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
       });
       e?.currentTarget?.reset();
       setSubmitSuccess(true);
-      // setTimeout(() => {
-      //   setSubmitSuccess(false);
-      // }, 3000);
     } catch (error) {
       pluginLogger.error('Upload error', error);
 
@@ -119,15 +147,57 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
 
       setSubmitError('Upload failed. Please check your connection and try again.');
     }
-  };
+  }, [currentUser?.userId, currentUser?.name, sessionToken, pushSubmitImage]);
 
   React.useEffect(() => {
-    if (!userMetadata) return;
+    if (!currentUser || !pluginApi) return;
 
-    // eslint-disable-next-line arrow-body-style
-    const isMobileCapture = userMetadata.user_metadata.some((currUserMetadata) => {
-      return currUserMetadata.parameter === 'is_mobile_capture' && currUserMetadata.value === '1';
-    });
+    pluginApi.setGenericContentItems([
+      new GenericContentSidekickArea({
+        id: 'visual-submit-sidekick',
+        name: 'Visual Submit',
+        section: 'Visual Submit',
+        buttonIcon: 'video',
+        open: false,
+        contentFunction: (element: HTMLElement) => {
+          const root = ReactDOM.createRoot(element);
+          if (currentUser?.presenter) {
+            root.render(
+              <PresenterSidekickArea
+                {...{
+                  pluginApi,
+                  currentUser,
+                  deleteSubmitImage,
+                }}
+              />,
+            );
+          } else {
+            root.render(
+              <UserSidekickArea
+                {...{
+                  pluginApi,
+                  handleImageSubmit,
+                  currentUser,
+                  submitError,
+                  setSubmitError,
+                }}
+              />,
+            );
+          }
+
+          return root;
+        },
+      }),
+    ]);
+  }, [
+    currentUser?.presenter,
+    currentUser?.userId,
+    submitError,
+  ]);
+
+  React.useEffect(() => {
+    if (!userSessionCurrent) return;
+    const isMobileCapture = userSessionCurrent.user_session_current[0].sessionName === 'visualSubmitMobileCaptureSession';
 
     if (isMobileCapture) {
       const appElement = document.getElementById('app');
@@ -143,54 +213,8 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           />,
         );
       }
-      return;
     }
-
-    pluginApi.setGenericContentItems([
-      new GenericContentSidekickArea({
-        id: 'visual-submit-sidekick',
-        name: 'Visual Submit',
-        section: 'Visual Submit',
-        buttonIcon: 'video',
-        open: false,
-        contentFunction: (element: HTMLElement) => {
-          const root = ReactDOM.createRoot(element);
-          if (currentUser?.presenter) {
-            root.render(
-              <PresenterSidekickArea
-                {...{
-                  submittedImages: submitImageResponseData?.data || [],
-                  deleteSubmitImage,
-                }}
-              />,
-            );
-          } else {
-            root.render(
-              <UserSidekickArea
-                {...{
-                  pluginApi,
-                  handleImageSubmit,
-                  currentUser,
-                  submitImageResponseData: submitImageResponseData?.data || [],
-                  submitError,
-                  setSubmitError,
-                  submitSuccess,
-                }}
-              />,
-            );
-          }
-
-          return root;
-        },
-      }),
-    ]);
-  }, [
-    currentUser,
-    userMetadata,
-    submitImageResponseData,
-    pluginApi,
-    handleImageSubmit,
-  ]);
+  }, [userSessionCurrent, handleImageSubmit, submitError, submitSuccess]);
 
   return null;
 }

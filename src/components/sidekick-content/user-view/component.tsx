@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
-  CurrentUserData, DataChannelEntryResponseType, PluginApi,
+  CurrentUserData,
+  PluginApi,
+  DataChannelTypes,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
@@ -8,7 +10,7 @@ import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { QrCodeModal } from '../../qr-code-modal/component';
-import { QRCodeIcon } from '../../../utils/icons';
+import { QRCodeIcon, TrashIcon } from '../../../utils/icons';
 
 interface UserSidekickAreaProps {
   pluginApi: PluginApi;
@@ -16,7 +18,6 @@ interface UserSidekickAreaProps {
   submitError: string | null;
   setSubmitError: React.Dispatch<React.SetStateAction<string | null>>;
   handleImageSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  submitImageResponseData: DataChannelEntryResponseType<SubmitImage>[];
 }
 
 export function UserSidekickArea({
@@ -25,24 +26,30 @@ export function UserSidekickArea({
   submitError,
   setSubmitError,
   handleImageSubmit,
-  submitImageResponseData,
 }: UserSidekickAreaProps): React.ReactElement {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [photoSessionUrl, setPhotoSessionUrl] = React.useState<string | null>(null);
 
-  const userSubmittedImages = submitImageResponseData
+  const {
+    data: submitImageResponseData,
+  } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+
+  const submittedImages = submitImageResponseData?.data || [];
+
+  const userSubmittedImages = submittedImages
     .filter((item) => item.payloadJson.submittedBy.userId === currentUser.userId);
 
   const generatePhotoSessionUrl = async () => {
     const joinUrl = await pluginApi.getJoinUrl({
       enforceLayout: 'PRESENTATION_ONLY',
-      'userdata-is_mobile_capture': '1',
+      sessionName: 'visualSubmitMobileCaptureSession',
       'userdata-bbb_hide_controls': 'true',
       'userdata-bbb_auto_join_audio': 'false',
       'userdata-bbb_auto_share_webcam': 'false',
       'userdata-bbb_show_session_details_on_join': 'false',
+      'userdata-bbb_hide_notifications': 'true',
     });
     setPhotoSessionUrl(joinUrl);
   };
@@ -50,20 +57,26 @@ export function UserSidekickArea({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      setSelectedFile(file);
+      setSubmitError(null);
 
       const url = URL.createObjectURL(file);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
       setPreviewUrl(url);
-      setSubmitError(null);
+      setSelectedFile(file);
     }
   };
 
-  // Cleanup preview URL when component unmounts
-  React.useEffect(() => () => {
+  const handleUserImageSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleImageSubmit(e);
+    setSelectedFile(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
     }
-  }, [previewUrl]);
+  };
 
   const handleViewFile = (fileUrl: string) => {
     window.open(fileUrl, '_blank');
@@ -84,7 +97,7 @@ export function UserSidekickArea({
       </Styled.UserHeaderContainer>
 
       <Styled.UserFormContainer
-        onSubmit={handleImageSubmit}
+        onSubmit={handleUserImageSubmit}
       >
         <Styled.UserFileInput
           type="file"
@@ -119,7 +132,7 @@ export function UserSidekickArea({
       />
 
       <Styled.UserSubmittedImagesContainer>
-        <Styled.UserSubmittedImagesLabel>Submitted Images</Styled.UserSubmittedImagesLabel>
+        <Styled.UserSubmittedImagesLabel>Your Submitted Images</Styled.UserSubmittedImagesLabel>
         {userSubmittedImages.length === 0 ? (
           <Styled.UserEmptySubmittedState>
             No images have been submitted yet.
@@ -130,7 +143,7 @@ export function UserSidekickArea({
               const { imageUrl } = file.payloadJson;
 
               return (
-                <Styled.UserSubmittedImageItem key={file.entryId}>
+                <Styled.UserSubmittedImageItem key={file.entryId} style={{ marginBottom: '10px' }}>
                   <Styled.UserSubmittedImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"
@@ -143,13 +156,20 @@ export function UserSidekickArea({
                       }
                     }}
                   />
+
                   <DefaultStyled.Info>
-                    <Styled.UserSubmittedImageTime>
+                    <DefaultStyled.Text style={{ marginTop: '5px' }}>
                       Submitted
                       {' '}
                       {formatUploadTime(new Date(file.createdAt))}
-                    </Styled.UserSubmittedImageTime>
+                    </DefaultStyled.Text>
                   </DefaultStyled.Info>
+
+                  <Styled.UserActionButtons>
+                    <CommonStyled.DeleteButton>
+                      <TrashIcon />
+                    </CommonStyled.DeleteButton>
+                  </Styled.UserActionButtons>
                 </Styled.UserSubmittedImageItem>
               );
             })}
