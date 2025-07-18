@@ -19,6 +19,16 @@ interface PresenterSidekickAreaProps {
   deleteSubmitImage: DeleteEntryFunction;
   pluginApi: PluginApi;
   currentUser: CurrentUserData;
+  handleViewFile: (
+    fileUrl: string,
+    submissionData?: {
+      userId: string;
+      userName: string;
+      imageIndex?: number;
+      totalImages?: number;
+    },
+    entryId?: string,
+  ) => void;
 }
 
 interface TrashIconProps {
@@ -50,6 +60,7 @@ export function PresenterSidekickArea({
   pluginApi,
   currentUser,
   deleteSubmitImage,
+  handleViewFile,
 }: PresenterSidekickAreaProps): React.ReactElement {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
   const [printClicked, setPrintClicked] = React.useState(false);
@@ -116,10 +127,6 @@ export function PresenterSidekickArea({
     return Array.from(groups.values());
   }, [filteredImages, allUsersInfo?.user, selectedUserId, currentUser.userId]);
 
-  const handleViewFile = (fileUrl: string) => {
-    window.open(fileUrl, '_blank');
-  };
-
   return (
     <DefaultStyled.BaseContainer>
       <Styled.PresenterTitle>
@@ -136,6 +143,7 @@ export function PresenterSidekickArea({
               setClearAllClicked(true);
               // Wait a bit to animation to be shown
               setTimeout(() => {
+                // eslint-disable-next-line no-alert
                 if (window.confirm('Are you sure you want to clear all submitted images?')) {
                   // Reset the data channel to clear all images
                   deleteSubmitImage([RESET_DATA_CHANNEL]);
@@ -284,19 +292,29 @@ export function PresenterSidekickArea({
 
               {userGroup.images.length > 0 && (
                 <Styled.PresenterUserImagesContainer>
-                  {userGroup.images.map((file) => {
+                  {userGroup.images.map((file, index) => {
                     const { imageUrl } = file.payloadJson;
 
                     return (
                       <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
                         <Styled.PresenterFileImage
                           src={imageUrl}
-                          onClick={() => handleViewFile(imageUrl)}
+                          onClick={() => handleViewFile(imageUrl, {
+                            userId: userGroup.user.userId,
+                            userName: userGroup.user.userName,
+                            imageIndex: index + 1,
+                            totalImages: userGroup.images.length,
+                          }, file.entryId)}
                           tabIndex={0}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              handleViewFile(imageUrl);
+                              handleViewFile(imageUrl, {
+                                userId: userGroup.user.userId,
+                                userName: userGroup.user.userName,
+                                imageIndex: index + 1,
+                                totalImages: userGroup.images.length,
+                              }, file.entryId);
                             }
                           }}
                         />

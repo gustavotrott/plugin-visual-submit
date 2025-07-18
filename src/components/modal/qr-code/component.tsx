@@ -1,17 +1,18 @@
 import * as React from 'react';
 import QRCode from 'react-qr-code';
+import { Modal } from '../component';
 import * as Styled from './styles';
 
 interface QrCodeModalProps {
   isOpen: boolean;
-  handleCloseModal: () => void;
+  onRequestClose: () => void;
   photoSessionUrl: string | null;
   generatePhotoSessionUrl: () => void;
 }
 
 export function QrCodeModal({
   isOpen,
-  handleCloseModal,
+  onRequestClose,
   photoSessionUrl = null,
   generatePhotoSessionUrl,
 }: QrCodeModalProps): React.ReactElement {
@@ -24,27 +25,13 @@ export function QrCodeModal({
   }, [isOpen]);
 
   return (
-    <Styled.PluginModal
-      overlayClassName="modalOverlay"
+    <Modal
       isOpen={isOpen}
-      onRequestClose={handleCloseModal}
+      onRequestClose={onRequestClose}
+      title="Mobile Photo Capture"
     >
-      <Styled.CloseButtonWrapper>
-        <Styled.CloseButton
-          type="button"
-          onClick={() => {
-            handleCloseModal();
-          }}
-          aria-label="Close button"
-        >
-          <i
-            className="icon-bbb-close"
-          />
-        </Styled.CloseButton>
-      </Styled.CloseButtonWrapper>
       {photoSessionUrl && (
-        <Styled.ContentContainer>
-          <Styled.Title>Mobile Photo Capture</Styled.Title>
+        <>
           <Styled.QRCodeWrapper>
             <QRCode
               value={photoSessionUrl}
@@ -64,8 +51,8 @@ export function QrCodeModal({
               link
             </Styled.StyledLink>
           </Styled.LinkContainer>
-        </Styled.ContentContainer>
+        </>
       )}
-    </Styled.PluginModal>
+    </Modal>
   );
 }

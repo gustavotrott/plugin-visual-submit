@@ -9,7 +9,7 @@ import * as DefaultStyled from '../shared/styles';
 import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
-import { QrCodeModal } from '../../qr-code-modal/component';
+import { QrCodeModal } from '../../modal/qr-code/component';
 import { QRCodeIcon, TrashIcon } from '../../../utils/icons';
 
 interface UserSidekickAreaProps {
@@ -18,6 +18,16 @@ interface UserSidekickAreaProps {
   submitError: string | null;
   setSubmitError: React.Dispatch<React.SetStateAction<string | null>>;
   handleImageSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  handleViewFile: (
+    fileUrl: string,
+    submissionData?: {
+      userId: string;
+      userName: string;
+      imageIndex?: number;
+      totalImages?: number;
+    },
+    entryId?: string,
+  ) => void;
 }
 
 export function UserSidekickArea({
@@ -26,6 +36,7 @@ export function UserSidekickArea({
   submitError,
   setSubmitError,
   handleImageSubmit,
+  handleViewFile,
 }: UserSidekickAreaProps): React.ReactElement {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
@@ -78,10 +89,6 @@ export function UserSidekickArea({
     }
   };
 
-  const handleViewFile = (fileUrl: string) => {
-    window.open(fileUrl, '_blank');
-  };
-
   return (
     <Styled.UserContainer>
       <Styled.UserHeaderContainer>
@@ -126,7 +133,7 @@ export function UserSidekickArea({
 
       <QrCodeModal
         isOpen={isModalOpen}
-        handleCloseModal={() => setIsModalOpen(false)}
+        onRequestClose={() => setIsModalOpen(false)}
         photoSessionUrl={photoSessionUrl}
         generatePhotoSessionUrl={generatePhotoSessionUrl}
       />
@@ -139,7 +146,7 @@ export function UserSidekickArea({
           </Styled.UserEmptySubmittedState>
         ) : (
           <Styled.UserSubmittedImagesList>
-            {userSubmittedImages.map((file) => {
+            {userSubmittedImages.map((file, index) => {
               const { imageUrl } = file.payloadJson;
 
               return (
@@ -147,12 +154,23 @@ export function UserSidekickArea({
                   <Styled.UserSubmittedImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"
-                    onClick={() => handleViewFile(imageUrl)}
+                    validationStatus={file.payloadJson.isCorrect}
+                    onClick={() => handleViewFile(imageUrl, {
+                      userId: currentUser.userId,
+                      userName: currentUser.name,
+                      imageIndex: index + 1,
+                      totalImages: userSubmittedImages.length,
+                    }, file.entryId)}
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        handleViewFile(imageUrl);
+                        handleViewFile(imageUrl, {
+                          userId: currentUser.userId,
+                          userName: currentUser.name,
+                          imageIndex: index + 1,
+                          totalImages: userSubmittedImages.length,
+                        }, file.entryId);
                       }
                     }}
                   />

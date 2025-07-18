@@ -5,7 +5,7 @@ import styled from 'styled-components';
 // You can alternatively set it on your root app component during app initialization.
 ReactModal.setAppElement('#app'); // Adjust '#root' to match your application's mount node ID.
 
-export const PluginModal = styled(ReactModal)`
+export const PluginModal = styled(ReactModal)<{ size?: 'default' | 'large' }>`
   position: relative;
   z-index: 1000 !important;
   outline: transparent;
@@ -16,11 +16,11 @@ export const PluginModal = styled(ReactModal)`
   padding: 2rem;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
   background-color: #fff !important;
-  max-width: 60vw;
-  max-height: 80vh;
+  max-width: ${(props) => (props.size === 'large' ? '90vw' : '60vw')};
+  max-height: ${(props) => (props.size === 'large' ? '90vh' : '80vh')};
   border-radius: 0.2rem;
   overflow: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   background-repeat: no-repeat;
   background-color: transparent;
   background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
@@ -55,11 +55,11 @@ export const PluginModal = styled(ReactModal)`
   }
 
   @media only screen and (max-width: 40em) {
-    max-width: 95vw;
+    max-width: ${(props) => (props.size === 'large' ? '98vw' : '95vw')};
   }
 
   @media only screen and (min-width: 40.063em) {
-    max-width: 80vw;
+    max-width: ${(props) => (props.size === 'large' ? '90vw' : '80vw')};
   }
 `;
 
@@ -86,46 +86,14 @@ export const CloseButtonWrapper = styled.div`
 export const ContentContainer = styled.div`
   text-align: center;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 `;
 
 export const Title = styled.h2`
   color: #333;
   margin: 0 0 20px 0;
-`;
-
-export const QRCodeWrapper = styled.div`
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  display: inline-block;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-`;
-
-export const StyledQRCode = styled.div`
-  height: auto;
-  max-width: 100%;
-  width: 100%;
-`;
-
-export const Description = styled.p`
-  margin-top: 20px;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.5;
-`;
-
-export const LinkContainer = styled.div`
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #e8f5e8;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #2d5a2d;
-  word-break: break-all;
-  border: 1px solid #c3e6c3;
-`;
-
-export const StyledLink = styled.a`
-  color: #2d5a2d;
-  text-decoration: underline;
 `;
