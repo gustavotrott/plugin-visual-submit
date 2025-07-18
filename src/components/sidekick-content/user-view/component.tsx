@@ -10,7 +10,7 @@ import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { QrCodeModal } from '../../qr-code-modal/component';
-import { QRCodeIcon } from '../../../utils/icons';
+import { QRCodeIcon, TrashIcon } from '../../../utils/icons';
 
 interface UserSidekickAreaProps {
   pluginApi: PluginApi;
@@ -132,7 +132,7 @@ export function UserSidekickArea({
       />
 
       <Styled.UserSubmittedImagesContainer>
-        <Styled.UserSubmittedImagesLabel>Submitted Images</Styled.UserSubmittedImagesLabel>
+        <Styled.UserSubmittedImagesLabel>Your Submitted Images</Styled.UserSubmittedImagesLabel>
         {userSubmittedImages.length === 0 ? (
           <Styled.UserEmptySubmittedState>
             No images have been submitted yet.
@@ -143,7 +143,7 @@ export function UserSidekickArea({
               const { imageUrl } = file.payloadJson;
 
               return (
-                <Styled.UserSubmittedImageItem key={file.entryId}>
+                <Styled.UserSubmittedImageItem key={file.entryId} style={{ marginBottom: '10px' }}>
                   <Styled.UserSubmittedImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"
@@ -156,13 +156,20 @@ export function UserSidekickArea({
                       }
                     }}
                   />
+
                   <DefaultStyled.Info>
-                    <Styled.UserSubmittedImageTime>
+                    <DefaultStyled.Text style={{ marginTop: '5px' }}>
                       Submitted
                       {' '}
                       {formatUploadTime(new Date(file.createdAt))}
-                    </Styled.UserSubmittedImageTime>
+                    </DefaultStyled.Text>
                   </DefaultStyled.Info>
+
+                  <Styled.UserActionButtons>
+                    <CommonStyled.DeleteButton>
+                      <TrashIcon />
+                    </CommonStyled.DeleteButton>
+                  </Styled.UserActionButtons>
                 </Styled.UserSubmittedImageItem>
               );
             })}

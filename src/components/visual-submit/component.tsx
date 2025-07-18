@@ -58,8 +58,9 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   } = pluginApi.useCustomSubscription<UserSessionCurrentGraphqlResponse>(USER_SESSION_CURRENT);
 
   const {
-    pushEntry: pushSubmitImage,
     data: submitImageResponseData,
+    pushEntry: pushSubmitImage,
+    deleteEntry: deleteSubmitImage,
     replaceEntry: updateSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
 
@@ -67,7 +68,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
 
   React.useEffect(() => {
     if (updateSubmitImage && !currentUser?.presenter) {
-      const userSubmitCount: {[key: string]: number} = {};
+      const userSubmitCount: { [key: string]: number } = {};
       submittedImages.filter((submittedImage) => {
         if (
           submittedImage.payloadJson.sentToLearningAnalyticsDashboard
@@ -209,6 +210,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
                 {...{
                   pluginApi,
                   currentUser,
+                  deleteSubmitImage,
                 }}
               />,
             );
