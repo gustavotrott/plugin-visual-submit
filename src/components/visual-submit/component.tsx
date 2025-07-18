@@ -344,11 +344,11 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
               <UserSidekickArea
                 {...{
                   pluginApi,
-                  handleImageSubmit,
                   currentUser,
                   submitError,
                   setSubmitError,
                   handleViewFile,
+                  handleImageSubmit,
                   deleteSubmitImage,
                 }}
               />,

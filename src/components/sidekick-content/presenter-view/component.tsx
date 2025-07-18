@@ -3,9 +3,9 @@ import {
   PluginApi,
   CurrentUserData,
   DataChannelTypes,
-  DeleteEntryFunction,
   RESET_DATA_CHANNEL,
   DataChannelEntryResponseType,
+  DeleteEntryFunction,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
@@ -16,7 +16,6 @@ import { TrashIcon } from '../../../utils/icons';
 import { ALL_USERS_INFO } from '../user-view/queries';
 
 interface PresenterSidekickAreaProps {
-  deleteSubmitImage: DeleteEntryFunction;
   pluginApi: PluginApi;
   currentUser: CurrentUserData;
   handleViewFile: (
@@ -29,6 +28,7 @@ interface PresenterSidekickAreaProps {
     },
     entryId?: string,
   ) => void;
+  deleteSubmitImage: DeleteEntryFunction;
 }
 
 interface TrashIconProps {
@@ -75,6 +75,29 @@ export function PresenterSidekickArea({
 
   const submittedImages = submitImageResponseData?.data || [];
 
+  // Handle individual image deletion
+  const handleDeleteImage = React.useCallback((entryId: string) => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('Are you sure you want to delete this image?')) {
+      deleteSubmitImage([entryId]);
+    }
+  }, [deleteSubmitImage]);
+
+  // Handle clear all images
+  const handleClearAll = React.useCallback(() => {
+    setClearAllClicked(true);
+    // Wait a bit to animation to be shown
+    setTimeout(() => {
+      // eslint-disable-next-line no-alert
+      if (window.confirm('Are you sure you want to clear all submitted images?')) {
+        deleteSubmitImage([RESET_DATA_CHANNEL]);
+      }
+      setTimeout(() => {
+        setClearAllClicked(false);
+      }, 500);
+    }, 200);
+  }, [deleteSubmitImage]);
+
   // Count images per user
   const userImageCounts = React.useMemo(() => {
     const counts = new Map<string, number>();
@@ -101,8 +124,7 @@ export function PresenterSidekickArea({
       user: { userId: string; userName: string; };
       images: DataChannelEntryResponseType<SubmitImage>[];
     }>();
-    
-    console.log("🚀 -> allUsersInfo.user.forEach -> allUsersInfo:", allUsersInfo)
+
     // Initialize groups for all users (exclude current user/presenter)
     allUsersInfo.user.forEach((user) => {
       const isNotCurrentUser = user.userId !== currentUser.userId;
@@ -140,20 +162,7 @@ export function PresenterSidekickArea({
         <Styled.PresenterFilterContainer>
           <TrashButtonIcon
             isOpen={clearAllClicked}
-            onClick={() => {
-              setClearAllClicked(true);
-              // Wait a bit to animation to be shown
-              setTimeout(() => {
-                // eslint-disable-next-line no-alert
-                if (window.confirm('Are you sure you want to clear all submitted images?')) {
-                  // Reset the data channel to clear all images
-                  deleteSubmitImage([RESET_DATA_CHANNEL]);
-                }
-                setTimeout(() => {
-                  setClearAllClicked(false);
-                }, 500);
-              }, 200);
-            }}
+            onClick={handleClearAll}
           />
           <Styled.PresenterUserFilterSelect
             value={selectedUserId || ''}
@@ -325,7 +334,8 @@ export function PresenterSidekickArea({
                   <Styled.PresenterUserImagesContainer>
                     {userGroup.images.map((
                       file: {
-                        payloadJson: { imageUrl: string }, entryId: string, createdAt: string },
+                        payloadJson: { imageUrl: string }, entryId: string, createdAt: string
+                      },
                       index: number,
                     ) => {
                       const { imageUrl } = file.payloadJson;
@@ -363,12 +373,8 @@ export function PresenterSidekickArea({
                           </DefaultStyled.Info>
 
                           <Styled.PresenterActionButtons>
-                            <CommonStyled.DeleteButton onClick={() => {
-                              // eslint-disable-next-line no-alert
-                              if (window.confirm('Are you sure you want to delete this image?')) {
-                                deleteSubmitImage([file.entryId]);
-                              }
-                            }}
+                            <CommonStyled.DeleteButton
+                              onClick={() => handleDeleteImage(file.entryId)}
                             >
                               <TrashIcon />
                             </CommonStyled.DeleteButton>

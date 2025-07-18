@@ -19,6 +19,7 @@ interface UserSidekickAreaProps {
   submitError: string | null;
   setSubmitError: React.Dispatch<React.SetStateAction<string | null>>;
   handleImageSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  deleteSubmitImage: DeleteEntryFunction;
   handleViewFile: (
     fileUrl: string,
     submissionData?: {
@@ -29,7 +30,6 @@ interface UserSidekickAreaProps {
     },
     entryId?: string,
   ) => void;
-  deleteSubmitImage: DeleteEntryFunction;
 }
 
 export function UserSidekickArea({
@@ -38,13 +38,21 @@ export function UserSidekickArea({
   submitError,
   setSubmitError,
   handleImageSubmit,
-  handleViewFile,
   deleteSubmitImage,
+  handleViewFile,
 }: UserSidekickAreaProps): React.ReactElement {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
   const [photoSessionUrl, setPhotoSessionUrl] = React.useState<string | null>(null);
+
+  // Handle individual image deletion
+  const handleDeleteImage = React.useCallback((entryId: string) => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('Are you sure you want to delete this image?')) {
+      deleteSubmitImage([entryId]);
+    }
+  }, [deleteSubmitImage]);
 
   const {
     data: submitImageResponseData,
@@ -187,12 +195,7 @@ export function UserSidekickArea({
                   </DefaultStyled.Info>
 
                   <Styled.UserActionButtons>
-                    <CommonStyled.DeleteButton onClick={() => {
-                      if (window.confirm('Are you sure you want to delete this image?')) {
-                        deleteSubmitImage([file.entryId]);
-                      }
-                    }}
-                    >
+                    <CommonStyled.DeleteButton onClick={() => handleDeleteImage(file.entryId)}>
                       <TrashIcon />
                     </CommonStyled.DeleteButton>
                   </Styled.UserActionButtons>
