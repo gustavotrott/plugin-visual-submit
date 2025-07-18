@@ -3,6 +3,7 @@ import {
   CurrentUserData,
   PluginApi,
   DataChannelTypes,
+  DeleteEntryFunction,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
@@ -28,6 +29,7 @@ interface UserSidekickAreaProps {
     },
     entryId?: string,
   ) => void;
+  deleteSubmitImage: DeleteEntryFunction;
 }
 
 export function UserSidekickArea({
@@ -37,6 +39,7 @@ export function UserSidekickArea({
   setSubmitError,
   handleImageSubmit,
   handleViewFile,
+  deleteSubmitImage,
 }: UserSidekickAreaProps): React.ReactElement {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
@@ -184,7 +187,12 @@ export function UserSidekickArea({
                   </DefaultStyled.Info>
 
                   <Styled.UserActionButtons>
-                    <CommonStyled.DeleteButton>
+                    <CommonStyled.DeleteButton onClick={() => {
+                      if (window.confirm('Are you sure you want to delete this image?')) {
+                        deleteSubmitImage([file.entryId]);
+                      }
+                    }}
+                    >
                       <TrashIcon />
                     </CommonStyled.DeleteButton>
                   </Styled.UserActionButtons>
