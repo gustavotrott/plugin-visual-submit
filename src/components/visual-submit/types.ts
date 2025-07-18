@@ -4,7 +4,7 @@ export interface SubmitImage {
     userId: string;
     userName: string;
   };
-  renderedInLAD: boolean;
+  sentToLearningAnalyticsDashboard: boolean;
 }
 
 export interface UserMetadata {

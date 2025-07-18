@@ -70,7 +70,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
       const userSubmitCount: {[key: string]: number} = {};
       submittedImages.filter((submittedImage) => {
         if (
-          submittedImage.payloadJson.renderedInLAD
+          submittedImage.payloadJson.sentToLearningAnalyticsDashboard
         ) {
           const currentUserSubmitCount = userSubmitCount[
             submittedImage.payloadJson.submittedBy.userId]
@@ -79,7 +79,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
             submittedImage.payloadJson.submittedBy.userId
           ] = currentUserSubmitCount + 1;
         }
-        return !submittedImage.payloadJson.renderedInLAD;
+        return !submittedImage.payloadJson.sentToLearningAnalyticsDashboard;
       }).forEach(
         (submittedImage) => {
           const submitNumber = userSubmitCount[submittedImage.payloadJson.submittedBy.userId]
@@ -87,7 +87,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           const submitColumnTitle = `Submit ${submitNumber + 1}`;
           pluginApi.sendGenericDataForLearningAnalyticsDashboard({
             columnTitle: submitColumnTitle,
-            value: `[Submit](${submittedImage.payloadJson.imageUrl})`,
+            value: `![Submit ${submitNumber + 1}](${submittedImage.payloadJson.imageUrl})`,
             cardTitle: 'Visual Submit',
           });
           pluginApi.persistEvent('Visual Submit', {
@@ -96,7 +96,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           });
           updateSubmitImage(submittedImage.entryId, {
             ...submittedImage.payloadJson,
-            renderedInLAD: true,
+            sentToLearningAnalyticsDashboard: true,
           });
         },
       );
@@ -144,7 +144,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           userId: currentUser.userId,
           userName: currentUser.name,
         },
-        renderedInLAD: false,
+        sentToLearningAnalyticsDashboard: false,
       };
 
       pushSubmitImage(submitData, {
