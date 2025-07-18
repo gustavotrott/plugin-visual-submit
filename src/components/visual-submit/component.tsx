@@ -349,6 +349,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
                   submitError,
                   setSubmitError,
                   handleViewFile,
+                  deleteSubmitImage,
                 }}
               />,
             );
