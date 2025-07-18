@@ -3,7 +3,8 @@ export interface SubmitImage {
   submittedBy: {
     userId: string;
     userName: string;
-  }
+  };
+  sentToLearningAnalyticsDashboard: boolean;
 }
 
 export interface UserMetadata {

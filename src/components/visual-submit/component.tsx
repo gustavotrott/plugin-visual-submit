@@ -58,9 +58,51 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   } = pluginApi.useCustomSubscription<UserSessionCurrentGraphqlResponse>(USER_SESSION_CURRENT);
 
   const {
+    data: submitImageResponseData,
     pushEntry: pushSubmitImage,
     deleteEntry: deleteSubmitImage,
+    replaceEntry: updateSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
+
+  const submittedImages = submitImageResponseData?.data || [];
+
+  React.useEffect(() => {
+    if (updateSubmitImage && !currentUser?.presenter) {
+      const userSubmitCount: { [key: string]: number } = {};
+      submittedImages.filter((submittedImage) => {
+        if (
+          submittedImage.payloadJson.sentToLearningAnalyticsDashboard
+        ) {
+          const currentUserSubmitCount = userSubmitCount[
+            submittedImage.payloadJson.submittedBy.userId]
+            ? userSubmitCount[submittedImage.payloadJson.submittedBy.userId] : 0;
+          userSubmitCount[
+            submittedImage.payloadJson.submittedBy.userId
+          ] = currentUserSubmitCount + 1;
+        }
+        return !submittedImage.payloadJson.sentToLearningAnalyticsDashboard;
+      }).forEach(
+        (submittedImage) => {
+          const submitNumber = userSubmitCount[submittedImage.payloadJson.submittedBy.userId]
+            ? userSubmitCount[submittedImage.payloadJson.submittedBy.userId] : 0;
+          const submitColumnTitle = `Submit ${submitNumber + 1}`;
+          pluginApi.sendGenericDataForLearningAnalyticsDashboard({
+            columnTitle: submitColumnTitle,
+            value: `![Submit ${submitNumber + 1}](${submittedImage.payloadJson.imageUrl})`,
+            cardTitle: 'Visual Submit',
+          });
+          pluginApi.persistEvent('Visual Submit', {
+            imageUrl: submittedImage.payloadJson.imageUrl,
+            submittedBy: submittedImage.payloadJson.submittedBy,
+          });
+          updateSubmitImage(submittedImage.entryId, {
+            ...submittedImage.payloadJson,
+            sentToLearningAnalyticsDashboard: true,
+          });
+        },
+      );
+    }
+  }, [submittedImages, updateSubmitImage, currentUser]);
 
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = React.useState<boolean>(false);
@@ -103,6 +145,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
           userId: currentUser.userId,
           userName: currentUser.name,
         },
+        sentToLearningAnalyticsDashboard: false,
       };
 
       pushSubmitImage(submitData, {
