@@ -12,6 +12,7 @@ import axios from 'axios';
 import { PresenterSidekickArea } from '../sidekick-content/presenter-view/component';
 import { UserSidekickArea } from '../sidekick-content/user-view/component';
 import { MobileCapture } from '../mobile-capture/component';
+import { ImageViewModal } from '../modal/image-view/component';
 import {
   SubmitImage,
   UserSessionCurrentGraphqlResponse,
@@ -61,13 +62,13 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
     data: submitImageResponseData,
     pushEntry: pushSubmitImage,
     deleteEntry: deleteSubmitImage,
-    replaceEntry: updateSubmitImage,
+    replaceEntry: replaceSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
 
   const submittedImages = submitImageResponseData?.data || [];
 
   React.useEffect(() => {
-    if (updateSubmitImage && !currentUser?.presenter) {
+    if (replaceSubmitImage && !currentUser?.presenter) {
       const userSubmitCount: { [key: string]: number } = {};
       submittedImages.filter((submittedImage) => {
         if (
@@ -95,20 +96,143 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
             imageUrl: submittedImage.payloadJson.imageUrl,
             submittedBy: submittedImage.payloadJson.submittedBy,
           });
-          updateSubmitImage(submittedImage.entryId, {
+          replaceSubmitImage(submittedImage.entryId, {
             ...submittedImage.payloadJson,
             sentToLearningAnalyticsDashboard: true,
           });
         },
       );
     }
-  }, [submittedImages, updateSubmitImage, currentUser]);
+  }, [submittedImages, replaceSubmitImage, currentUser]);
 
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = React.useState<boolean>(false);
+  const [isImageViewModalOpen, setIsImageViewModalOpen] = React.useState<boolean>(false);
+  const [selectedImageUrl, setSelectedImageUrl] = React.useState<string>('');
+  const [selectedImageEntryId, setSelectedImageEntryId] = React.useState<string>('');
+  const [selectedImageSubmission, setSelectedImageSubmission] = React.useState<{
+    userId: string;
+    userName: string;
+    imageIndex?: number;
+    totalImages?: number;
+  } | null>(null);
+
+  // Find the current submitted image data
+  const currentSubmittedImageData = React.useMemo(() => {
+    if (!selectedImageEntryId || !selectedImageSubmission) return undefined;
+
+    const imageData = submittedImages.find((item) => item.entryId === selectedImageEntryId);
+    if (!imageData) return undefined;
+
+    return {
+      imageUrl: selectedImageUrl,
+      submittedBy: {
+        userId: selectedImageSubmission.userId,
+        userName: selectedImageSubmission.userName,
+      },
+      imageIndex: selectedImageSubmission.imageIndex,
+      totalImages: selectedImageSubmission.totalImages,
+      isCorrect: imageData.payloadJson.isCorrect,
+      feedback: imageData.payloadJson.feedback,
+      sentToLearningAnalyticsDashboard:
+        imageData.payloadJson.sentToLearningAnalyticsDashboard || false,
+    };
+  }, [selectedImageEntryId, selectedImageSubmission, selectedImageUrl, submittedImages]);
 
   const params = new URLSearchParams(window.location.search);
   const sessionToken = params.get('sessionToken');
+
+  const handleViewFile = React.useCallback((
+    fileUrl: string,
+    submissionData?: {
+      userId: string;
+      userName: string;
+      imageIndex?: number;
+      totalImages?: number;
+    },
+    entryId?: string,
+  ) => {
+    setSelectedImageUrl(fileUrl);
+    setSelectedImageEntryId(entryId || '');
+    setSelectedImageSubmission(submissionData || null);
+    setIsImageViewModalOpen(true);
+  }, []);
+
+  const handleCloseImageModal = React.useCallback(() => {
+    setIsImageViewModalOpen(false);
+    setSelectedImageUrl('');
+    setSelectedImageEntryId('');
+    setSelectedImageSubmission(null);
+  }, []);
+
+  const handleValidateImage = React.useCallback((isCorrect: boolean) => {
+    if (!selectedImageEntryId) {
+      pluginLogger.error('No entryId available for validation');
+      return;
+    }
+
+    // Update the image validation status
+    const updatedPayload: SubmitImage = {
+      imageUrl: selectedImageUrl,
+      submittedBy: selectedImageSubmission ? {
+        userId: selectedImageSubmission.userId,
+        userName: selectedImageSubmission.userName,
+      } : { userId: '', userName: '' },
+      isCorrect,
+      feedback: currentSubmittedImageData?.feedback,
+      sentToLearningAnalyticsDashboard:
+        currentSubmittedImageData?.sentToLearningAnalyticsDashboard || false,
+    };
+
+    replaceSubmitImage(selectedImageEntryId, updatedPayload);
+
+    pluginLogger.info('Image validation updated:', {
+      isCorrect,
+      entryId: selectedImageEntryId,
+      imageUrl: selectedImageUrl,
+    });
+  }, [
+    selectedImageUrl,
+    selectedImageEntryId,
+    selectedImageSubmission,
+    currentSubmittedImageData?.feedback,
+    replaceSubmitImage,
+  ]);
+
+  const handleSendFeedback = React.useCallback(async (feedback: string) => {
+    if (!selectedImageEntryId || !selectedImageSubmission) {
+      pluginLogger.error('No entryId or submission data available for feedback');
+      return;
+    }
+
+    // Update the image with feedback
+    const updatedPayload: SubmitImage = {
+      imageUrl: selectedImageUrl,
+      submittedBy: selectedImageSubmission ? {
+        userId: selectedImageSubmission.userId,
+        userName: selectedImageSubmission.userName,
+      } : { userId: '', userName: '' },
+      isCorrect: currentSubmittedImageData?.isCorrect,
+      feedback,
+      sentToLearningAnalyticsDashboard:
+        currentSubmittedImageData?.sentToLearningAnalyticsDashboard || false,
+    };
+
+    replaceSubmitImage(selectedImageEntryId, updatedPayload);
+
+    pluginLogger.info('Image feedback updated:', {
+      feedback,
+      entryId: selectedImageEntryId,
+      imageUrl: selectedImageUrl,
+    });
+  }, [
+    selectedImageUrl,
+    selectedImageEntryId,
+    selectedImageSubmission,
+    currentSubmittedImageData?.isCorrect,
+    replaceSubmitImage,
+    pluginApi,
+  ]);
 
   const handleImageSubmit = React.useCallback(async (
     e: React.FormEvent<HTMLFormElement>,
@@ -210,6 +334,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
                 {...{
                   pluginApi,
                   currentUser,
+                  handleViewFile,
                   deleteSubmitImage,
                 }}
               />,
@@ -223,6 +348,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
                   currentUser,
                   submitError,
                   setSubmitError,
+                  handleViewFile,
                 }}
               />,
             );
@@ -236,6 +362,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
     currentUser?.presenter,
     currentUser?.userId,
     submitError,
+    handleViewFile,
   ]);
 
   React.useEffect(() => {
@@ -259,7 +386,16 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
     }
   }, [userSessionCurrent, handleImageSubmit, submitError, submitSuccess]);
 
-  return null;
+  return (
+    <ImageViewModal
+      isOpen={isImageViewModalOpen}
+      onRequestClose={handleCloseImageModal}
+      isPresenter={currentUser?.presenter}
+      submittedImageData={currentSubmittedImageData}
+      onValidateImage={handleValidateImage}
+      onSendFeedback={handleSendFeedback}
+    />
+  );
 }
 
 export default PluginVisualSubmit;

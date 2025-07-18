@@ -156,9 +156,17 @@ export const UserSubmittedImageItem = styled(MobileListItem)`
   gap: 15px;
 `;
 
-export const UserSubmittedImageThumbnail = styled(ClickableThumbnail)`
+export const UserSubmittedImageThumbnail = styled(ClickableThumbnail)<{
+  validationStatus?: boolean | null;
+}>`
   width: 80px;
   height: 80px;
+  border: 3px solid ${({ validationStatus }) => {
+    if (validationStatus === true) return '#28a745';
+    if (validationStatus === false) return '#dc3545';
+    return 'transparent';
+  }};
+  transition: border-color 0.2s ease;
 `;
 
 export const UserActionButtons = styled(Actions)`

@@ -109,7 +109,7 @@ export const ClickableThumbnail = styled(Thumbnail)`
   flex-shrink: 0;
   
   &:hover, &:focus {
-    transform: scale(1.05);
+    /* transform: scale(1.05); */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     border-color: #007bff;
   }

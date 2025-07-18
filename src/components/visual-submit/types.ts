@@ -4,6 +4,8 @@ export interface SubmitImage {
     userId: string;
     userName: string;
   };
+  isCorrect?: boolean;
+  feedback?: string;
   sentToLearningAnalyticsDashboard: boolean;
 }
 
