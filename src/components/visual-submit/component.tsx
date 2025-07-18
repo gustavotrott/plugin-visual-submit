@@ -30,6 +30,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
   const {
     data: submitImageResponseData,
     pushEntry: pushSubmitImage,
+    deleteEntry: deleteSubmitImage,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
 
   const [submitError, setSubmitError] = React.useState<string | null>(null);
@@ -159,6 +160,7 @@ function PluginVisualSubmit({ pluginUuid }: PluginVisualSubmitProps): React.Reac
               <PresenterSidekickArea
                 {...{
                   submittedImages: submitImageResponseData?.data || [],
+                  deleteSubmitImage,
                 }}
               />,
             );
