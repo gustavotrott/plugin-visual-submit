@@ -62,10 +62,8 @@ export const Image = styled.img<{
   validationStatus?: boolean | null;
   isPresenter?: boolean;
 }>`
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  max-width: 90%;
+  max-height: 40vh;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

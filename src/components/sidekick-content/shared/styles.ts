@@ -37,7 +37,6 @@ export const EmptyState = styled.div`
   font-style: italic;
   background: white;
   border-radius: 8px;
-  border: 2px solid #ddd;
 `;
 
 export const Text = styled.div`
@@ -79,7 +78,7 @@ export const mobileContainerStyles = `
 
 // Shared container for both user and presenter views
 export const BaseContainer = styled.div`
-  height: 100%;
+  max-height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;

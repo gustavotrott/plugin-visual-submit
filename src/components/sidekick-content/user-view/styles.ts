@@ -89,8 +89,8 @@ export const UserFileInput = styled.input`
 `;
 
 export const UserImagePreview = styled(Thumbnail)`
-  width: 100%;
-  height: 100%;
+  max-width: 90%;
+  max-height: 200px;
   margin-top: 10px;
   
   @media (max-height: 600px) {

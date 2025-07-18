@@ -12,7 +12,7 @@ import * as DefaultStyled from '../shared/styles';
 import * as CommonStyled from '../../../styles/common';
 import { AllUsersInfoGraphqlResponse, SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
-import { TrashIcon } from '../../../utils/icons';
+import { PrintIcon, TrashIcon } from '../../../utils/icons';
 import { ALL_USERS_INFO } from '../user-view/queries';
 
 interface PresenterSidekickAreaProps {
@@ -31,31 +31,6 @@ interface PresenterSidekickAreaProps {
   deleteSubmitImage: DeleteEntryFunction;
 }
 
-interface TrashIconProps {
-  isOpen: boolean;
-  onClick: React.MouseEventHandler<HTMLDivElement>;
-}
-
-function TrashButtonIcon({ isOpen, onClick }: TrashIconProps) {
-  return (
-    <Styled.TrashContainer onClick={onClick}>
-      <Styled.Trash>
-        <Styled.Tap isOpen={isOpen}>
-          <Styled.Tip />
-          <Styled.Top />
-        </Styled.Tap>
-        <Styled.Tap2>
-          <Styled.Bottom>
-            <Styled.Line />
-            <Styled.Line />
-            <Styled.Line />
-          </Styled.Bottom>
-        </Styled.Tap2>
-      </Styled.Trash>
-    </Styled.TrashContainer>
-  );
-}
-
 export function PresenterSidekickArea({
   pluginApi,
   currentUser,
@@ -63,8 +38,6 @@ export function PresenterSidekickArea({
   handleViewFile,
 }: PresenterSidekickAreaProps): React.ReactElement {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
-  const [printClicked, setPrintClicked] = React.useState(false);
-  const [clearAllClicked, setClearAllClicked] = React.useState(false);
   const {
     data: allUsersInfo,
   } = pluginApi.useCustomSubscription<AllUsersInfoGraphqlResponse>(ALL_USERS_INFO);
@@ -85,17 +58,9 @@ export function PresenterSidekickArea({
 
   // Handle clear all images
   const handleClearAll = React.useCallback(() => {
-    setClearAllClicked(true);
-    // Wait a bit to animation to be shown
-    setTimeout(() => {
-      // eslint-disable-next-line no-alert
-      if (window.confirm('Are you sure you want to clear all submitted images?')) {
-        deleteSubmitImage([RESET_DATA_CHANNEL]);
-      }
-      setTimeout(() => {
-        setClearAllClicked(false);
-      }, 500);
-    }, 200);
+    if (window.confirm('Are you sure you want to clear all submitted images?')) {
+      deleteSubmitImage([RESET_DATA_CHANNEL]);
+    }
   }, [deleteSubmitImage]);
 
   // Count images per user
@@ -160,10 +125,15 @@ export function PresenterSidekickArea({
 
       {allUsersInfo?.user?.length > 0 && (
         <Styled.PresenterFilterContainer>
-          <TrashButtonIcon
-            isOpen={clearAllClicked}
+          <Styled.TrashButton
+            type="button"
             onClick={handleClearAll}
-          />
+            aria-label="Clear All submitions"
+            title="Clear All submitions"
+          >
+            Clear All
+            <TrashIcon />
+          </Styled.TrashButton>
           <Styled.PresenterUserFilterSelect
             value={selectedUserId || ''}
             onChange={(e) => setSelectedUserId(e.target.value || null)}
@@ -185,9 +155,7 @@ export function PresenterSidekickArea({
           </Styled.PresenterUserFilterSelect>
           <Styled.PrintButton
             type="button"
-            disabled={printClicked}
             onClick={() => {
-              setPrintClicked(true);
               const myframe = document.createElement('IFRAME') as HTMLIFrameElement;
               myframe.style.zIndex = '-1';
               document.body.appendChild(myframe);
@@ -279,12 +247,11 @@ export function PresenterSidekickArea({
                 myframe.focus();
                 myframe.contentWindow.print();
                 myframe.parentNode.removeChild(myframe);
-                setPrintClicked(false);
               }, 500); // wait for images to load
               window.focus();
             }}
           >
-            <Styled.PrintIcon clicked={printClicked} />
+            <PrintIcon />
           </Styled.PrintButton>
         </Styled.PresenterFilterContainer>
       )}
