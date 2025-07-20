@@ -70,21 +70,29 @@ export const PresenterFilterContainer = styled.div`
   display: flex;
   margin-bottom: 10px;
   flex-shrink: 0;
+  gap: 10px;
   justify-content: space-between;
   align-items: center;
+
   @media (max-height: 600px) {
     margin-bottom: 8px;
   }
 `;
 
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`;
+
 export const PresenterUserFilterSelect = styled.select`
   padding: 5px 10px;
-  margin-right: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
   background: white;
   font-size: 14px;
   cursor: pointer;
+  /* flex: 1; */
   
   &:hover {
     border-color: #007bff;
@@ -99,7 +107,6 @@ export const PresenterUserFilterSelect = styled.select`
   @media (max-height: 600px) {
     padding: 4px 8px;
     font-size: 13px;
-    margin-right: 8px;
   }
 `;
 
@@ -109,9 +116,13 @@ export const PrintButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-export const TrashButton = styled.button`
+export const DeleteButton = styled.button`
   background: #DF2721;
   color: white;
   border: none;

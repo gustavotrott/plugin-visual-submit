@@ -82,7 +82,7 @@ export const BaseContainer = styled.div`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  
+
   ${scrollingStyles}
   ${mobileContainerStyles}
 `;
