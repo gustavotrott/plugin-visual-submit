@@ -5,17 +5,16 @@ import {
   DataChannelTypes,
   RESET_DATA_CHANNEL,
   DataChannelEntryResponseType,
-  DeleteEntryFunction,
+  DeleteEntryFunction, GraphqlResponseWrapper, UsersBasicInfoResponseFromGraphqlWrapper,
 } from 'bigbluebutton-html-plugin-sdk';
 import * as Styled from './styles';
 import * as DefaultStyled from '../shared/styles';
 import * as CommonStyled from '../../../styles/common';
-import { AllUsersInfoGraphqlResponse, SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { PrintIcon, TrashIcon } from '../../../utils/icons';
-import { ALL_USERS_INFO } from '../user-view/queries';
 import { DeleteConfirmationModal } from '../../modal/delete-confirmation/component';
 import { handlePrintSubmissions } from '../../../utils/printSubmissions';
+import { SubmitImage } from '../../visual-submit/types';
 
 interface PresenterSidekickAreaProps {
   pluginApi: PluginApi;
@@ -44,9 +43,8 @@ export function PresenterSidekickArea({
   const [clearAllModalOpen, setClearAllModalOpen] = React.useState<boolean>(false);
   const [pendingDeleteEntryId, setPendingDeleteEntryId] = React.useState<string | null>(null);
 
-  const {
-    data: allUsersInfo,
-  } = pluginApi.useCustomSubscription<AllUsersInfoGraphqlResponse>(ALL_USERS_INFO);
+  const allUsersInfo: GraphqlResponseWrapper<UsersBasicInfoResponseFromGraphqlWrapper> = pluginApi
+    .useUsersBasicInfo();
 
   const {
     data: submitImageResponseData,
@@ -105,7 +103,7 @@ export function PresenterSidekickArea({
 
   // Group images by all users in the meeting
   const groupedImages = React.useMemo(() => {
-    if (!allUsersInfo?.user) return [];
+    if (!allUsersInfo?.data?.user) return [];
 
     const groups = new Map<string, {
       user: { userId: string; userName: string; };
@@ -113,7 +111,7 @@ export function PresenterSidekickArea({
     }>();
 
     // Initialize groups for all users (exclude current user/presenter)
-    allUsersInfo.user.forEach((user) => {
+    allUsersInfo.data.user.forEach((user) => {
       const isNotCurrentUser = user.userId !== currentUser.userId;
       const isSelectedUser = !selectedUserId || user.userId === selectedUserId;
 
@@ -135,7 +133,7 @@ export function PresenterSidekickArea({
     });
 
     return Array.from(groups.values());
-  }, [filteredImages, allUsersInfo?.user, selectedUserId, currentUser.userId]);
+  }, [filteredImages, allUsersInfo?.data?.user, selectedUserId, currentUser.userId]);
 
   return (
     <DefaultStyled.BaseContainer>
@@ -145,7 +143,7 @@ export function PresenterSidekickArea({
         {filteredImages?.length > 0 && `(${filteredImages?.length})`}
       </Styled.PresenterTitle>
 
-      {allUsersInfo?.user?.length > 0 && (
+      {(allUsersInfo?.data?.user?.length || 0) > 0 && (
         <Styled.PresenterFilterContainer>
           <Styled.PresenterUserFilterSelect
             value={selectedUserId || ''}
@@ -154,7 +152,7 @@ export function PresenterSidekickArea({
             name="userFilter"
           >
             <option value="">All Users</option>
-            {allUsersInfo?.user
+            {allUsersInfo.data.user
               .filter((user) => user.userId !== currentUser.userId)
               .map((user) => {
                 const imageCount = userImageCounts.get(user.userId) || 0;
