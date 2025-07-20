@@ -52,8 +52,6 @@ export function PresenterSidekickArea({
     data: submitImageResponseData,
   } = pluginApi.useDataChannel<SubmitImage>('submitImage', DataChannelTypes.ALL_ITEMS);
 
-  const submittedImages = submitImageResponseData?.data || [];
-
   // Handle individual image deletion
   const handleDeleteImage = React.useCallback((entryId: string) => {
     setPendingDeleteEntryId(entryId);
@@ -84,6 +82,8 @@ export function PresenterSidekickArea({
   const cancelClearAll = React.useCallback(() => {
     setClearAllModalOpen(false);
   }, []);
+
+  const submittedImages = submitImageResponseData?.data || [];
 
   // Count images per user
   const userImageCounts = React.useMemo(() => {
@@ -243,6 +243,9 @@ export function PresenterSidekickArea({
 
                       return (
                         <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
+                          <CommonStyled.ImageNumber>
+                            {userGroup.images.length - index}
+                          </CommonStyled.ImageNumber>
                           <Styled.PresenterFileImage
                             src={imageUrl}
                             onClick={() => handleViewFile(imageUrl, {

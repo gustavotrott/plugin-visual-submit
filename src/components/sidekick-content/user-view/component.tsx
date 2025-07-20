@@ -175,6 +175,9 @@ export function UserSidekickArea({
 
               return (
                 <Styled.UserSubmittedImageItem key={file.entryId} style={{ marginBottom: '10px' }}>
+                  <CommonStyled.ImageNumber>
+                    {userSubmittedImages.length - index}
+                  </CommonStyled.ImageNumber>
                   <Styled.UserSubmittedImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"

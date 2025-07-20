@@ -52,3 +52,11 @@ export const DeleteButton = styled.button`
     color: #dc3545;
   }
 `;
+
+export const ImageNumber = styled.div`
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2px;
+`;
