@@ -112,31 +112,42 @@ export const PrintButton = styled.button`
 `;
 
 export const TrashButton = styled.button`
-    background: #DF2721;
-    color: white;
-    border: none;
-    padding: 7px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  background: #DF2721;
+  color: white;
+  border: none;
+  gap: 8px;
+  padding: 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
+  &:hover {
+    background: #ff0600;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+
+  &:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    
     &:hover {
-        background: #ff0600;
+      background: #ccc;
     }
+  }
 
-    &:focus {
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
-
-    @media (max-height: 600px) {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
-    }
+  @media (max-height: 600px) {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
 `;

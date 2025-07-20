@@ -13,7 +13,7 @@ export const PluginModal = styled(ReactModal)<{ size?: 'default' | 'large' }>`
   outline-style: solid;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
   background-color: #fff !important;
   max-width: ${(props) => (props.size === 'large' ? '90vw' : '60vw')};
@@ -85,7 +85,6 @@ export const CloseButtonWrapper = styled.div`
 
 export const ContentContainer = styled.div`
   text-align: center;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   flex: 1;

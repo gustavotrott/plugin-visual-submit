@@ -14,6 +14,7 @@ import { AllUsersInfoGraphqlResponse, SubmitImage } from '../../visual-submit/ty
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { PrintIcon, TrashIcon } from '../../../utils/icons';
 import { ALL_USERS_INFO } from '../user-view/queries';
+import { DeleteConfirmationModal } from '../../modal/delete-confirmation/component';
 
 interface PresenterSidekickAreaProps {
   pluginApi: PluginApi;
@@ -38,6 +39,10 @@ export function PresenterSidekickArea({
   handleViewFile,
 }: PresenterSidekickAreaProps): React.ReactElement {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false);
+  const [clearAllModalOpen, setClearAllModalOpen] = React.useState<boolean>(false);
+  const [pendingDeleteEntryId, setPendingDeleteEntryId] = React.useState<string | null>(null);
+
   const {
     data: allUsersInfo,
   } = pluginApi.useCustomSubscription<AllUsersInfoGraphqlResponse>(ALL_USERS_INFO);
@@ -50,18 +55,34 @@ export function PresenterSidekickArea({
 
   // Handle individual image deletion
   const handleDeleteImage = React.useCallback((entryId: string) => {
-    // eslint-disable-next-line no-alert
-    if (window.confirm('Are you sure you want to delete this image?')) {
-      deleteSubmitImage([entryId]);
+    setPendingDeleteEntryId(entryId);
+    setDeleteModalOpen(true);
+  }, []);
+
+  const confirmDeleteImage = React.useCallback(() => {
+    if (pendingDeleteEntryId) {
+      deleteSubmitImage([pendingDeleteEntryId]);
+      setPendingDeleteEntryId(null);
     }
-  }, [deleteSubmitImage]);
+  }, [deleteSubmitImage, pendingDeleteEntryId]);
+
+  const cancelDeleteImage = React.useCallback(() => {
+    setDeleteModalOpen(false);
+    setPendingDeleteEntryId(null);
+  }, []);
 
   // Handle clear all images
   const handleClearAll = React.useCallback(() => {
-    if (window.confirm('Are you sure you want to clear all submitted images?')) {
-      deleteSubmitImage([RESET_DATA_CHANNEL]);
-    }
+    setClearAllModalOpen(true);
+  }, []);
+
+  const confirmClearAll = React.useCallback(() => {
+    deleteSubmitImage([RESET_DATA_CHANNEL]);
   }, [deleteSubmitImage]);
+
+  const cancelClearAll = React.useCallback(() => {
+    setClearAllModalOpen(false);
+  }, []);
 
   // Count images per user
   const userImageCounts = React.useMemo(() => {
@@ -128,8 +149,9 @@ export function PresenterSidekickArea({
           <Styled.TrashButton
             type="button"
             onClick={handleClearAll}
-            aria-label="Clear All submitions"
-            title="Clear All submitions"
+            disabled={submittedImages.length === 0}
+            aria-label="Clear All submissions"
+            title="Clear All submissions"
           >
             Clear All
             <TrashIcon />
@@ -156,11 +178,11 @@ export function PresenterSidekickArea({
           <Styled.PrintButton
             type="button"
             onClick={() => {
-              const myframe = document.createElement('IFRAME') as HTMLIFrameElement;
-              myframe.style.zIndex = '-1';
-              document.body.appendChild(myframe);
+              const myFrame = document.createElement('IFRAME') as HTMLIFrameElement;
+              myFrame.style.zIndex = '-1';
+              document.body.appendChild(myFrame);
 
-              const doc = myframe.contentDocument;
+              const doc = myFrame.contentDocument;
               const { body } = doc;
 
               body.style.backgroundColor = 'white';
@@ -244,9 +266,9 @@ export function PresenterSidekickArea({
               body.appendChild(table);
 
               setTimeout(() => {
-                myframe.focus();
-                myframe.contentWindow.print();
-                myframe.parentNode.removeChild(myframe);
+                myFrame.focus();
+                myFrame.contentWindow.print();
+                myFrame.parentNode.removeChild(myFrame);
               }, 500); // wait for images to load
               window.focus();
             }}
@@ -355,6 +377,20 @@ export function PresenterSidekickArea({
             ))}
         </Styled.PresenterFilesList>
       )}
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onConfirm={confirmDeleteImage}
+        onCancel={cancelDeleteImage}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={clearAllModalOpen}
+        onConfirm={confirmClearAll}
+        onCancel={cancelClearAll}
+        title="Clear All Images"
+        message="Are you sure you want to clear all submitted images? This action cannot be undone."
+      />
     </DefaultStyled.BaseContainer>
   );
 }

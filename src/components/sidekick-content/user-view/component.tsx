@@ -11,6 +11,7 @@ import * as CommonStyled from '../../../styles/common';
 import { SubmitImage } from '../../visual-submit/types';
 import { formatUploadTime } from '../../../utils/formatUploadTime';
 import { QrCodeModal } from '../../modal/qr-code/component';
+import { DeleteConfirmationModal } from '../../modal/delete-confirmation/component';
 import { QRCodeIcon, TrashIcon } from '../../../utils/icons';
 
 interface UserSidekickAreaProps {
@@ -44,15 +45,27 @@ export function UserSidekickArea({
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false);
+  const [pendingDeleteEntryId, setPendingDeleteEntryId] = React.useState<string | null>(null);
   const [photoSessionUrl, setPhotoSessionUrl] = React.useState<string | null>(null);
 
   // Handle individual image deletion
   const handleDeleteImage = React.useCallback((entryId: string) => {
-    // eslint-disable-next-line no-alert
-    if (window.confirm('Are you sure you want to delete this image?')) {
-      deleteSubmitImage([entryId]);
+    setPendingDeleteEntryId(entryId);
+    setDeleteModalOpen(true);
+  }, []);
+
+  const confirmDeleteImage = React.useCallback(() => {
+    if (pendingDeleteEntryId) {
+      deleteSubmitImage([pendingDeleteEntryId]);
+      setPendingDeleteEntryId(null);
     }
-  }, [deleteSubmitImage]);
+  }, [deleteSubmitImage, pendingDeleteEntryId]);
+
+  const cancelDeleteImage = React.useCallback(() => {
+    setDeleteModalOpen(false);
+    setPendingDeleteEntryId(null);
+  }, []);
 
   const {
     data: submitImageResponseData,
@@ -205,6 +218,12 @@ export function UserSidekickArea({
           </Styled.UserSubmittedImagesList>
         )}
       </Styled.UserSubmittedImagesContainer>
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onConfirm={confirmDeleteImage}
+        onCancel={cancelDeleteImage}
+      />
     </Styled.UserContainer>
   );
 }
