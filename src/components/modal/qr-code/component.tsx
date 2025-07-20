@@ -42,15 +42,6 @@ export function QrCodeModal({
           <Styled.Description>
             <strong>Scan with your phone to take and submit photos</strong>
           </Styled.Description>
-          <Styled.LinkContainer>
-            <Styled.StyledLink
-              href={photoSessionUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              link
-            </Styled.StyledLink>
-          </Styled.LinkContainer>
         </>
       )}
     </Modal>

@@ -13,7 +13,6 @@ import {
 
 export const UserContainer = styled(BaseContainer)`
   gap: 15px;
-  max-width: 400px;
   padding-right: 10px;
 `;
 
@@ -26,7 +25,7 @@ export const UserTitle = styled(ResponsiveTitle)`
   min-width: 0;
   margin: 0;
   padding: 0;
-  
+
   @media (max-height: 600px) {
     font-size: 16px;
   }
@@ -39,7 +38,7 @@ export const UserFormContainer = styled.form`
   flex-direction: column;
   gap: 10px;
   flex-shrink: 0; /* Prevent form from shrinking on mobile */
-  
+
   @media (max-height: 600px) {
     gap: 8px;
   }
@@ -51,7 +50,7 @@ export const UserHeaderContainer = styled.div`
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  
+
   @media (max-height: 600px) {
     margin-bottom: 5px;
     gap: 8px;
@@ -81,7 +80,7 @@ export const UserFileInput = styled.input`
     background: #e3f2fd;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
-  
+
   @media (max-height: 600px) {
     padding: 15px;
     font-size: 13px;
@@ -92,7 +91,7 @@ export const UserImagePreview = styled(Thumbnail)`
   width: 100%;
   height: 100%;
   margin-top: 10px;
-  
+
   @media (max-height: 600px) {
     max-height: 120px;
     object-fit: cover;
@@ -108,11 +107,11 @@ export const UserSubmitButton = styled.button`
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  
+
   &:hover {
     background: #0056b3;
   }
-  
+
   &:disabled {
     background: #6c757d;
     cursor: not-allowed;
@@ -123,7 +122,7 @@ export const UserSubmittedImagesContainer = styled.div`
   border-top: 1px solid #ddd;
   flex: 1;
   min-height: 0; /* Allow flex item to shrink */
-  
+
   @media (max-height: 600px) {
     display: flex;
     flex-direction: column;
@@ -137,7 +136,7 @@ export const UserSubmittedImagesLabel = styled.h3`
   font-size: 16px;
   font-weight: 500;
   flex-shrink: 0;
-  
+
   @media (max-height: 600px) {
     font-size: 14px;
     margin-bottom: 10px;
@@ -180,7 +179,7 @@ export const UserSubmittedImageTime = styled(Text)`
 
 export const UserEmptySubmittedState = styled(MobileEmptyState)`
   font-size: 14px;
-  
+
   @media (max-height: 600px) {
     font-size: 13px;
   }
@@ -199,16 +198,16 @@ export const QrCodeButton = styled.button`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  
+
   &:hover {
     background: #0056b3;
   }
-  
+
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
   }
-  
+
   @media (max-height: 600px) {
     width: 35px;
     height: 35px;

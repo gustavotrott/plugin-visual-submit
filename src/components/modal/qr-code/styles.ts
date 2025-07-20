@@ -20,19 +20,3 @@ export const Description = styled.p`
   font-size: 14px;
   line-height: 1.5;
 `;
-
-export const LinkContainer = styled.div`
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #e8f5e8;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #2d5a2d;
-  word-break: break-all;
-  border: 1px solid #c3e6c3;
-`;
-
-export const StyledLink = styled.a`
-  color: #2d5a2d;
-  text-decoration: underline;
-`;
