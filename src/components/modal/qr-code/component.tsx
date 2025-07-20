@@ -36,7 +36,7 @@ export function QrCodeModal({
             <QRCode
               value={photoSessionUrl}
               size={200}
-              style={{ height: 'auto', maxWidth: '100%', width: '100%' }}
+              style={{ height: 'auto', maxWidth: '50%', width: '50%' }}
             />
           </Styled.QRCodeWrapper>
           <Styled.Description>
