@@ -10,10 +10,20 @@ export const ImageContainer = styled.div`
   padding: 0;
   margin: 0;
   flex-shrink: 0;
+`;
+
+export const ImageWrapper = styled.div`
   position: relative;
+  display: inline-block;
+  max-width: 100%;
+  max-height: 100%;
 `;
 
 export const ImageOverlay = styled.div`
+  max-width: 90%;
+  max-height: 40vh;
+  margin: auto;
+
   position: absolute;
   top: 0;
   left: 0;
@@ -22,12 +32,11 @@ export const ImageOverlay = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  padding: 12px;
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
   
-  ${ImageContainer}:hover & {
+  ${ImageWrapper}:hover & {
     opacity: 1;
     pointer-events: auto;
   }
@@ -38,7 +47,7 @@ export const OpenInNewTabButton = styled.button`
   opacity: 0.7;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 8px;
   font-size: 12px;
   font-weight: 500;

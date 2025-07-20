@@ -111,22 +111,24 @@ export function ImageViewModal({
       size="large"
     >
       <Styled.ImageContainer>
-        <Styled.Image
-          src={submittedImageData?.imageUrl || ''}
-          alt="Submitted visual content"
-          validationStatus={submittedImageData?.isCorrect}
-          isPresenter={isPresenter}
-        />
-        <Styled.ImageOverlay>
-          <Styled.OpenInNewTabButton
-            type="button"
-            onClick={handleOpenInNewTab}
-            title="Open image in new tab"
-            aria-label="Open image in new tab"
-          >
-            <ExternalLinkIcon />
-          </Styled.OpenInNewTabButton>
-        </Styled.ImageOverlay>
+        <Styled.ImageWrapper>
+          <Styled.Image
+            src={submittedImageData?.imageUrl || ''}
+            alt="Submitted visual content"
+            validationStatus={submittedImageData?.isCorrect}
+            isPresenter={isPresenter}
+          />
+          <Styled.ImageOverlay>
+            <Styled.OpenInNewTabButton
+              type="button"
+              onClick={handleOpenInNewTab}
+              title="Open image in new tab"
+              aria-label="Open image in new tab"
+            >
+              <ExternalLinkIcon />
+            </Styled.OpenInNewTabButton>
+          </Styled.ImageOverlay>
+        </Styled.ImageWrapper>
       </Styled.ImageContainer>
 
       {isPresenter && (
