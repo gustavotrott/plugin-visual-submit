@@ -68,7 +68,7 @@ export function ImageViewModal({
       && submittedImageData?.imageIndex !== undefined
       && submittedImageData?.totalImages !== undefined
     ) {
-      return `${submittedImageData.submittedBy.userName} - ${submittedImageData.imageIndex}/${submittedImageData.totalImages}`;
+      return `${submittedImageData.submittedBy.userName} - ${submittedImageData.totalImages - submittedImageData.imageIndex + 1}/${submittedImageData.totalImages}`;
     }
     return 'Submitted Visual Content';
   }, [isPresenter, submittedImageData]);
