@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import {
   Actions,
   ScrollableList,
-  ClickableThumbnail,
   ResponsiveTitle,
   MobileEmptyState,
   MobileListItem,
@@ -26,11 +25,6 @@ export const PresenterFilesList = styled(ScrollableList)`
 
 export const PresenterFileItem = styled(MobileListItem)`
   gap: 15px;
-`;
-
-export const PresenterFileImage = styled(ClickableThumbnail)`
-  width: 80px;
-  height: 80px;
 `;
 
 export const PresenterActionButtons = styled(Actions)`

@@ -171,17 +171,17 @@ export function UserSidekickArea({
         ) : (
           <Styled.UserSubmittedImagesList>
             {userSubmittedImages.map((file, index) => {
-              const { imageUrl } = file.payloadJson;
+              const { imageUrl, isCorrect } = file.payloadJson;
 
               return (
                 <Styled.UserSubmittedImageItem key={file.entryId} style={{ marginBottom: '10px' }}>
                   <CommonStyled.ImageNumber>
                     {userSubmittedImages.length - index}
                   </CommonStyled.ImageNumber>
-                  <Styled.UserSubmittedImageThumbnail
+                  <DefaultStyled.ImageThumbnail
                     src={imageUrl}
                     alt="Submitted image"
-                    validationStatus={file.payloadJson.isCorrect}
+                    validationStatus={isCorrect}
                     onClick={() => handleViewFile(imageUrl, {
                       userId: currentUser.userId,
                       userName: currentUser.name,

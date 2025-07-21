@@ -124,6 +124,29 @@ export const ClickableThumbnail = styled(Thumbnail)`
   }
 `;
 
+// Shared image thumbnail with validation status
+export const ImageThumbnail = styled(ClickableThumbnail)<{
+  validationStatus?: boolean | null;
+}>`
+  width: 80px;
+  height: 80px;
+  border: 3px solid ${({ validationStatus }) => {
+    if (validationStatus === true) return '#28a745';
+    if (validationStatus === false) return '#dc3545';
+    return 'transparent';
+  }};
+  transition: border-color 0.2s ease;
+  
+  &:hover, &:focus {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: ${({ validationStatus }) => {
+    if (validationStatus === true) return '#28a745';
+    if (validationStatus === false) return '#dc3545';
+    return '#007bff';
+  }};
+  }
+`;
+
 // Shared responsive title
 export const ResponsiveTitle = styled(Title)`
   flex-shrink: 0;

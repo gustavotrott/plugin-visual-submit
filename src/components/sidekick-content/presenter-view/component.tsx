@@ -249,15 +249,16 @@ export function PresenterSidekickArea({
                         },
                         index: number,
                       ) => {
-                        const { imageUrl } = file.payloadJson;
+                        const { imageUrl, isCorrect } = file.payloadJson as SubmitImage;
 
                         return (
                           <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
                             <CommonStyled.ImageNumber>
                               {userGroup.images.length - index}
                             </CommonStyled.ImageNumber>
-                            <Styled.PresenterFileImage
+                            <DefaultStyled.ImageThumbnail
                               src={imageUrl}
+                              validationStatus={isCorrect}
                               onClick={() => handleViewFile(imageUrl, {
                                 userId: userGroup.user.userId,
                                 userName: userGroup.user.userName,

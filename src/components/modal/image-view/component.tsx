@@ -116,7 +116,6 @@ export function ImageViewModal({
             src={submittedImageData?.imageUrl || ''}
             alt="Submitted visual content"
             validationStatus={submittedImageData?.isCorrect}
-            isPresenter={isPresenter}
           />
           <Styled.ImageOverlay>
             <Styled.OpenInNewTabButton

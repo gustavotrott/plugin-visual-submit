@@ -76,8 +76,8 @@ export const Image = styled.img<{
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  ${({ isPresenter, validationStatus }) => {
-    if (!isPresenter && validationStatus !== null && validationStatus !== undefined) {
+  ${({ validationStatus }) => {
+    if (validationStatus !== null && validationStatus !== undefined) {
       return `
         border: 4px solid ${validationStatus === false ? '#dc3545' : '#28a745'};
         transition: border-color 0.2s ease;
