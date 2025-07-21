@@ -17,7 +17,7 @@ export const PresenterTitle = styled(ResponsiveTitle)`
 `;
 
 export const PresenterFilesList = styled(ScrollableList)`
-  gap: 15px;
+  gap: 10px;
   
   @media (max-height: 600px) {
     max-height: 400px;
@@ -59,7 +59,7 @@ export const PresenterUserHeader = styled.div`
 export const PresenterUserImagesContainer = styled.div`
   border-top: none;
   border-radius: 0 0 8px 8px;
-  padding: 10px;
+  padding: 10px 0;
   
   @media (max-height: 600px) {
     padding: 8px;

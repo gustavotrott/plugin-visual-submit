@@ -224,69 +224,80 @@ export function PresenterSidekickArea({
             }, [])
             .map((userGroup) => (
               <div key={userGroup.user.userId}>
-                <Styled.PresenterUserHeader>
-                  {userGroup.user.userName}
-                  {' ('}
-                  {userGroup.images.length}
-                  )
-                </Styled.PresenterUserHeader>
+                {userGroup.images.length === 0 ? (
+                  <>
+                    <Styled.PresenterUserHeader>
+                      {userGroup.user.userName}
+                    </Styled.PresenterUserHeader>
+                    <DefaultStyled.EmptyState>
+                      No images have been submitted yet
+                    </DefaultStyled.EmptyState>
+                  </>
+                ) : (
+                  <>
+                    <Styled.PresenterUserHeader>
+                      {userGroup.user.userName}
+                      {' ('}
+                      {userGroup.images.length}
+                      )
+                    </Styled.PresenterUserHeader>
 
-                {userGroup.images.length > 0 && (
-                  <Styled.PresenterUserImagesContainer>
-                    {userGroup.images.map((
-                      file: {
-                        payloadJson: { imageUrl: string }, entryId: string, createdAt: string
-                      },
-                      index: number,
-                    ) => {
-                      const { imageUrl } = file.payloadJson;
+                    <Styled.PresenterUserImagesContainer>
+                      {userGroup.images.map((
+                        file: {
+                          payloadJson: { imageUrl: string }, entryId: string, createdAt: string
+                        },
+                        index: number,
+                      ) => {
+                        const { imageUrl } = file.payloadJson;
 
-                      return (
-                        <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
-                          <CommonStyled.ImageNumber>
-                            {userGroup.images.length - index}
-                          </CommonStyled.ImageNumber>
-                          <Styled.PresenterFileImage
-                            src={imageUrl}
-                            onClick={() => handleViewFile(imageUrl, {
-                              userId: userGroup.user.userId,
-                              userName: userGroup.user.userName,
-                              imageIndex: index + 1,
-                              totalImages: userGroup.images.length,
-                            }, file.entryId)}
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                handleViewFile(imageUrl, {
-                                  userId: userGroup.user.userId,
-                                  userName: userGroup.user.userName,
-                                  imageIndex: index + 1,
-                                  totalImages: userGroup.images.length,
-                                }, file.entryId);
-                              }
-                            }}
-                          />
+                        return (
+                          <Styled.PresenterFileItem key={file.entryId} style={{ marginBottom: '10px' }}>
+                            <CommonStyled.ImageNumber>
+                              {userGroup.images.length - index}
+                            </CommonStyled.ImageNumber>
+                            <Styled.PresenterFileImage
+                              src={imageUrl}
+                              onClick={() => handleViewFile(imageUrl, {
+                                userId: userGroup.user.userId,
+                                userName: userGroup.user.userName,
+                                imageIndex: index + 1,
+                                totalImages: userGroup.images.length,
+                              }, file.entryId)}
+                              tabIndex={0}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handleViewFile(imageUrl, {
+                                    userId: userGroup.user.userId,
+                                    userName: userGroup.user.userName,
+                                    imageIndex: index + 1,
+                                    totalImages: userGroup.images.length,
+                                  }, file.entryId);
+                                }
+                              }}
+                            />
 
-                          <DefaultStyled.Info>
-                            <DefaultStyled.Text style={{ marginTop: '5px' }}>
-                              Uploaded
-                              {' '}
-                              {formatUploadTime(new Date(file.createdAt))}
-                            </DefaultStyled.Text>
-                          </DefaultStyled.Info>
+                            <DefaultStyled.Info>
+                              <DefaultStyled.Text style={{ marginTop: '5px' }}>
+                                Uploaded
+                                {' '}
+                                {formatUploadTime(new Date(file.createdAt))}
+                              </DefaultStyled.Text>
+                            </DefaultStyled.Info>
 
-                          <Styled.PresenterActionButtons>
-                            <CommonStyled.DeleteButton
-                              onClick={() => handleDeleteImage(file.entryId)}
-                            >
-                              <TrashIcon />
-                            </CommonStyled.DeleteButton>
-                          </Styled.PresenterActionButtons>
-                        </Styled.PresenterFileItem>
-                      );
-                    })}
-                  </Styled.PresenterUserImagesContainer>
+                            <Styled.PresenterActionButtons>
+                              <CommonStyled.DeleteButton
+                                onClick={() => handleDeleteImage(file.entryId)}
+                              >
+                                <TrashIcon />
+                              </CommonStyled.DeleteButton>
+                            </Styled.PresenterActionButtons>
+                          </Styled.PresenterFileItem>
+                        );
+                      })}
+                    </Styled.PresenterUserImagesContainer>
+                  </>
                 )}
               </div>
             ))}
